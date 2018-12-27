@@ -7,6 +7,8 @@ export {createCFG};
 let currentNumber=1;
 let graphLines=[];
 let mergedNodes=new Map(); //helps to avoid overriding a merged node
+let conditionsResult=new Map();
+let hadCondition=false;
 /*
 const statementType = {
     'VariableDeclaration' : handleNormal,
@@ -19,7 +21,8 @@ function init(){
     currentNumber=1;
     graphLines=[];
     mergedNodes=new Map();
-
+    conditionsResult=new Map(); // <cond, true/false>
+    hadCondition=false;
 }
 
 function createCFG(codeToParse,table,input) {
@@ -29,8 +32,15 @@ function createCFG(codeToParse,table,input) {
     const graphObject = esgraph.dot(cfg, { counter: 0, source: codeToParse });
     let graphLines = graphObject.split('\n');
 
-    //update graph
+
+    //update graph - merge, index nodes, shape
     graphLines = updateGraph(graphLines);
+
+    // color graph
+    let colorHelp = symbolicSubstitutionn(codeToParse, input, table);
+    MakeConditionsResult(colorHelp);
+    graphLines=colorGraph(graphLines);
+
     //display the graph
     let d='';
     for (let i=1; i<graphLines.length; i++){
@@ -42,7 +52,124 @@ function createCFG(codeToParse,table,input) {
     return v;
 }
 
+function MakeConditionsResult(colorHelp){
+    let finalCode = colorHelp[0];
+    let ifElseStatements = colorHelp[1];
+    for (let [k, v] of ifElseStatements) {
+        let condition_line_num =k;
+        let result = v;
+        let condLine =finalCode[condition_line_num].Line;
+        condLine=condLine.substring(condLine.indexOf('(')+1,condLine.lastIndexOf(')'));
+        conditionsResult.set(condLine,result); // <cond, true/false>
+    }
 
+}
+
+function colorGraph(graphLines){
+    let firstCond=conditionsResult.keys().next().value;
+    let lineResult = conditionsResult.get(firstCond);
+    conditionsResult.delete(firstCond);
+
+    for (let i=1; i<graphLines.length ; i++){
+        let label = getLabel(graphLines[i]);
+        if (label==firstCond){
+            graphLines[i] =colorNode(graphLines[i]);
+            hadCondition=true;
+            let node_name = getNodeNumber(graphLines[i]);
+            let nextNode = getCondNextNode(graphLines,node_name,lineResult);
+            let nextNode_line = getNodeLine(graphLines,nextNode);
+            graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
+            graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
+        }
+        if (!hadCondition){ //lines before any condition
+            graphLines[i] =colorNode(graphLines[i]);
+        }
+    }
+    return graphLines;
+}
+
+//every node that is pointed by a colored node-> will be colored
+function recursiveColoring(graphLines,coloredNode, coloredNode_line){
+
+    //if the colored node is condition
+    if (isCond(coloredNode_line)){
+        let firstCond=conditionsResult.keys().next().value;
+        let lineResult = conditionsResult.get(firstCond);
+
+        let label = getLabel(coloredNode_line);
+
+        if (label==firstCond){
+            conditionsResult.delete(firstCond);
+            let nextNode = getCondNextNode(graphLines,coloredNode,lineResult);
+            let nextNode_line = getNodeLine(graphLines,nextNode);
+            graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
+            graphLines= recursiveColoring(graphLines, nextNode,graphLines[nextNode_line]);
+        }
+    }
+    //normal colored node
+    else{
+        let nextNode = getNextNode(graphLines, coloredNode);
+        if (nextNode!='NoNext')
+        {
+            let nextNode_line = getNodeLine(graphLines, nextNode);
+            graphLines[nextNode_line] = colorNode(graphLines[nextNode_line]);
+            graphLines = recursiveColoring(graphLines, nextNode, graphLines[nextNode_line]);
+        }
+    }
+    return graphLines;
+}
+
+function isCond(line){
+    let ans=false;
+    if (line.includes('shape=')){
+        if (line.includes('=diamond'))
+            ans=true;
+    }
+    return ans;
+}
+
+//get next node of cond node
+function getCondNextNode(graphLines,cond_node_name,result){
+    let pointed='';
+    for (let i=0; i<graphLines.length; i++){
+        let line=graphLines[i];
+        var  index = line.indexOf(cond_node_name+ ' ->');
+        if (index>-1 && getLabel(line)==result+'') {
+            pointed=line.substring(line.indexOf('-> ')+3,line.lastIndexOf(' ['));
+            return pointed;
+        }
+    }
+}
+
+
+//get next node of UN cond node
+function getNextNode(graphLines,cond_node_name){
+    let pointed='';
+    for (let i=0; i<graphLines.length; i++){
+        let line=graphLines[i];
+        var  index = line.indexOf(cond_node_name+ ' ->');
+        if (index>-1) {
+            pointed = line.substring(line.indexOf('-> ') + 3, line.lastIndexOf(' ['));
+            return pointed;
+        }
+    }
+    return 'NoNext'; //doesn't have next
+}
+//color a node in the path
+function colorNode(line){
+    let endIndex=line.lastIndexOf(']');
+    line=line.substring(0, endIndex)+',color=green'+line.substring(endIndex);
+    return line;
+
+}
+
+function getNodeLine(graphLines,node_name){
+    for (let i=0; i<graphLines.length; i++) {
+        let line=graphLines[i];
+        if (line.substring(0,line.indexOf(' ['))==node_name)
+            return i;
+    }
+}
 function updateGraph(graphLines){
     graphLines = removeStart('n0',graphLines); //remove start node
     for (let i=1; i<graphLines.length; i++){
@@ -57,7 +184,17 @@ function updateGraph(graphLines){
             parsedLine = esprima.parseScript(label + ';');
         }
         //if condition - only update node's number
-        if (parsedLine=='' || ( parsedLine.body.length==1 && parsedLine.body[0].expression!=null && parsedLine.body[0].expression.type=='BinaryExpression')){
+
+        if (label.substring(0,6)=='return'){
+            graphLines[i-1]=graphLines[i-1].replace(new RegExp('let', 'g'), ''); //remove let from previosu node..
+            graphLines[i-1]=graphLines[i-1].replace(new RegExp(';', 'g'), ''); //remove let from previosu node..
+            currentNumber=parseInt(getPreviousNumber(graphLines,i))+1;
+            let new_node_name = 'n'+currentNumber;
+            graphLines[i]=addShape(line,'normal');
+            graphLines[i]=graphLines[i].replace(oldName,new_node_name); //replace with merged name
+            graphLines = replaceWithNewNode(oldName,new_node_name,graphLines);
+        }
+        else if (parsedLine=='' || ( parsedLine.body.length==1 && parsedLine.body[0].expression!=null && parsedLine.body[0].expression.type=='BinaryExpression')){
             graphLines[i-1]=graphLines[i-1].replace(new RegExp('let', 'g'), ''); //remove let from previosu node..
             currentNumber=parseInt(getPreviousNumber(graphLines,i))+1;
             let new_node_name = 'n'+currentNumber;
@@ -130,7 +267,8 @@ function getLabel(line){
 
 //if let or assignment
 function isLetStatement(line){
-    if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==')) || line.includes('++')|| line.includes('--')) //let or has ONE '='
+    // if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==')) || line.includes('++')|| line.includes('--')) //let or has ONE '='
+    if ((line.substring(0,3)=='let'  | line.includes('++')|| line.includes('--')))
         return true;
     return false;
 }
@@ -164,7 +302,6 @@ function removeItem(removed_nodeName, pointer_nodeName,graphLines){
 
 //get the node number of the previous node
 function getPreviousNumber(graphLines,i){
-
     let previousNode = getNodeNumber(graphLines[i-1]);
     return previousNode.substring(previousNode.indexOf('n')+1);
 
@@ -195,13 +332,11 @@ function removeStart(n0,graphLines){
             graphLines.splice(i, 1);
             i--;
         }
-
         index = line.indexOf(n0+ ' ->');
         if (index>-1) {
             graphLines.splice(i, 1);
             i--; //we removed item so index changed. so we dont miss item
         }
-
     }
     return graphLines;
 }

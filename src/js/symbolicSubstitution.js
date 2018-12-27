@@ -78,7 +78,11 @@ function symbolicSubstitutionn(codeToParse, givenInput, resultt){
     bodyLines(code.length, locals); //goes through all statements.
 
     addRestOfCode(finalCode);
-    return finalCode;
+    //return finalCode;
+    let colorHelp = [];
+    colorHelp.push(finalCode);
+    colorHelp.push(ifElseLines);
+    return colorHelp;
 }
 
 function init(){
