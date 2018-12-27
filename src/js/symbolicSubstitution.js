@@ -23,7 +23,7 @@ let globalsOutIndex=0;
 let vars=[]; //vars that are right of the =
 
 
-
+let conditionsType =new Map();
 
 
 const statementType = {
@@ -82,6 +82,7 @@ function symbolicSubstitutionn(codeToParse, givenInput, resultt){
     let colorHelp = [];
     colorHelp.push(finalCode);
     colorHelp.push(ifElseLines);
+    colorHelp.push(conditionsType);
     return colorHelp;
 }
 
@@ -102,6 +103,7 @@ function init(){
     countStatements=0;
     input='';
     vars=[];
+    conditionsType =new Map();
 
 }
 function countEndFunction(){ //find the end index of function
@@ -190,9 +192,10 @@ function handleConditionStatement(statement,locals) {
     //finalCode.push({Line: code[countOld].substring(0, code[countOld].indexOf('(')) + '(' + newCondition + ')'+close});
     finalCode.push({Line: code[countOld]});
     countOld++;
-    if (statement.Type == 'if statement' || statement.Type == 'else if statement') {
+    if (statement.Type == 'if statement' || statement.Type == 'else if statement' || statement.Type == 'while statement') {
         var condtionResult = conditionResult(newCondition);
         ifElseLines.set((finalCode.length - 1) + '', condtionResult);
+        conditionsType.set((finalCode.length - 1) + '',statement.Type);
     }
 }
 

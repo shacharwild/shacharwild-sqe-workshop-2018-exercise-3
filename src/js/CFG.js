@@ -1,3 +1,5 @@
+import * as escodegen from 'escodegen';
+
 const esgraph = require('esgraph');
 import * as esprima from 'esprima';
 import * as viz from 'viz.js';
@@ -9,6 +11,8 @@ let graphLines=[];
 let mergedNodes=new Map(); //helps to avoid overriding a merged node
 let conditionsResult=new Map();
 let hadCondition=false;
+let notToBeMerged=[]; //statements that appear STRAIGHT after ELSE -> they are not mergable
+let conditionsType=new Map();
 /*
 const statementType = {
     'VariableDeclaration' : handleNormal,
@@ -23,6 +27,8 @@ function init(){
     mergedNodes=new Map();
     conditionsResult=new Map(); // <cond, true/false>
     hadCondition=false;
+    notToBeMerged=[];
+    conditionsType=new Map(); //<condition, type(while,if..)>
 }
 
 function createCFG(codeToParse,table,input) {
@@ -31,36 +37,59 @@ function createCFG(codeToParse,table,input) {
     let cfg = esgraph(parsedCode.body[0].body, { range: true });
     const graphObject = esgraph.dot(cfg, { counter: 0, source: codeToParse });
     let graphLines = graphObject.split('\n');
-
-
-    //update graph - merge, index nodes, shape
+    findUnMergable(codeToParse); //update graph - merge, index nodes, shape
     graphLines = updateGraph(graphLines);
-
-    // color graph
-    let colorHelp = symbolicSubstitutionn(codeToParse, input, table);
+    let colorHelp = symbolicSubstitutionn(codeToParse, input, table);// color graph
     MakeConditionsResult(colorHelp);
     graphLines=colorGraph(graphLines);
-
-    //display the graph
-    let d='';
+    graphLines = indexNodes(graphLines);//add index to each node
+    let d=''; //display the graph
     for (let i=1; i<graphLines.length; i++){
         d=d+graphLines[i]+'';
         if (i<graphLines.length-1)
             d=d+'\n';
     }
     let  v= viz('digraph{'+d+'}');
-    return v;
-}
+    return v;  }
 
+
+
+function findUnMergable(codeToParse){
+    let code=codeToParse.split('\n');
+    for (let i=0; i<code.length; i++){
+        let line=code[i];
+        //else (NOT else if) OR statements that comes after }
+        if ((line.includes('else') && !line.includes('else if')) || (line.includes('}') && !line.match(/[a-z]/i) )){
+            while ( i+1<code.length && !code[i+1].match(/[a-z]/i)) { //if empty line
+                i++;
+            }
+            //remove the /t from beginning
+
+            if (i+1<code.length) {
+                let temp=code[i+1].replace(/\s/g, '');
+                if (temp.length>1 && temp.substring(0,6)!='return' && temp.substring(0,5)!='while' && temp.substring(0,2)!='if' && temp.substring(0,4)!='else') {
+                    let unMergable = code[i + 1];
+                    unMergable = esprima.parseScript(unMergable + '');
+                    unMergable = escodegen.generate(unMergable); //convert from JSON to string
+                    unMergable = unMergable.replace(';', '');
+                    notToBeMerged.push(unMergable);
+                }
+            }
+        }
+    }
+
+}
 function MakeConditionsResult(colorHelp){
     let finalCode = colorHelp[0];
     let ifElseStatements = colorHelp[1];
+    let temp_conditions_type = colorHelp[2];
     for (let [k, v] of ifElseStatements) {
         let condition_line_num =k;
         let result = v;
         let condLine =finalCode[condition_line_num].Line;
         condLine=condLine.substring(condLine.indexOf('(')+1,condLine.lastIndexOf(')'));
         conditionsResult.set(condLine,result); // <cond, true/false>
+        conditionsType.set(condLine,temp_conditions_type.get(k));
     }
 
 }
@@ -68,8 +97,9 @@ function MakeConditionsResult(colorHelp){
 function colorGraph(graphLines){
     let firstCond=conditionsResult.keys().next().value;
     let lineResult = conditionsResult.get(firstCond);
+    let condType = conditionsType.get(firstCond);
     conditionsResult.delete(firstCond);
-
+    conditionsType.delete(firstCond);
     for (let i=1; i<graphLines.length ; i++){
         let label = getLabel(graphLines[i]);
         if (label==firstCond){
@@ -80,30 +110,41 @@ function colorGraph(graphLines){
             let nextNode_line = getNodeLine(graphLines,nextNode);
             graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
             graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
+            if (condType=='while statement'){
+                let nextNode = getCondNextNode(graphLines,node_name,false); //if while ALWAYS color false
+                let nextNode_line = getNodeLine(graphLines,nextNode);
+                graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
+                graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
+            }
         }
-        if (!hadCondition){ //lines before any condition
+        if (!hadCondition) //lines before any condition
             graphLines[i] =colorNode(graphLines[i]);
-        }
     }
     return graphLines;
 }
 
 //every node that is pointed by a colored node-> will be colored
 function recursiveColoring(graphLines,coloredNode, coloredNode_line){
-
     //if the colored node is condition
     if (isCond(coloredNode_line)){
         let firstCond=conditionsResult.keys().next().value;
         let lineResult = conditionsResult.get(firstCond);
-
+        let condType = conditionsType.get(firstCond);
         let label = getLabel(coloredNode_line);
 
         if (label==firstCond){
             conditionsResult.delete(firstCond);
+            conditionsType.delete(firstCond);
             let nextNode = getCondNextNode(graphLines,coloredNode,lineResult);
             let nextNode_line = getNodeLine(graphLines,nextNode);
             graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
             graphLines= recursiveColoring(graphLines, nextNode,graphLines[nextNode_line]);
+            if (condType=='while statement'){
+                let nextNode = getCondNextNode(graphLines,coloredNode,false); //if while ALWAYS color false
+                let nextNode_line = getNodeLine(graphLines,nextNode);
+                graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
+                graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
+            }
         }
     }
     //normal colored node
@@ -157,8 +198,10 @@ function getNextNode(graphLines,cond_node_name){
 }
 //color a node in the path
 function colorNode(line){
-    let endIndex=line.lastIndexOf(']');
-    line=line.substring(0, endIndex)+',color=green'+line.substring(endIndex);
+    if (!line.includes('color=')) { //if node not colored
+        let endIndex = line.lastIndexOf(']');
+        line = line.substring(0, endIndex) + ',color=green' + line.substring(endIndex);
+    }
     return line;
 
 }
@@ -209,7 +252,7 @@ function updateGraph(graphLines){
             if (i<graphLines.length-1){
                 let nextLine=graphLines[i+1];
                 let label_2 = getLabel(nextLine);
-                if (isLetStatement(label) && isLetStatement(label_2)){ //if need to unite labels
+                if (isLetStatement(label) && isLetStatement(label_2) && !notToBeMerged.includes(label_2)){ //if need to unite labels
                     let merged_label=label+'\n'+label_2; //merge lET labels
                     let merged_nodeName = 'n'+currentNumber;
 
@@ -234,6 +277,28 @@ function updateGraph(graphLines){
     }
     return graphLines;
 }
+
+// add index to each node
+function indexNodes(graphLines){
+    for (let i=0; i<graphLines.length; i++){
+        graphLines[i] = addNumber(graphLines[i]);
+    }
+    return graphLines;
+}
+
+function addNumber(line){
+
+    let labelIndex=line.indexOf('label=');
+    if (labelIndex>-1 && !line.includes('->')){ //if exists label
+        let node_name = getNodeNumber(line);
+        let node_number = node_name.substring(node_name.indexOf('n')+1);
+        let lable = getLabel(line);
+        let newLabel = '('+node_number+')\n'+lable;
+        line=line.replace(lable,newLabel);
+    }
+    return line;
+}
+
 
 function addShape(line,kind){
     let shapeKind='';
@@ -267,8 +332,8 @@ function getLabel(line){
 
 //if let or assignment
 function isLetStatement(line){
-    // if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==')) || line.includes('++')|| line.includes('--')) //let or has ONE '='
-    if ((line.substring(0,3)=='let'  | line.includes('++')|| line.includes('--')))
+    if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==')) || line.includes('++')|| line.includes('--')) //let or has ONE '='
+    // ((line.substring(0,3)=='let'  | line.includes('++')|| line.includes('--')))
         return true;
     return false;
 }
