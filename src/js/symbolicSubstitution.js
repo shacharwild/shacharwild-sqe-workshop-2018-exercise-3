@@ -83,6 +83,7 @@ function symbolicSubstitutionn(codeToParse, givenInput, resultt){
     colorHelp.push(finalCode);
     colorHelp.push(ifElseLines);
     colorHelp.push(conditionsType);
+    colorHelp.push(finalCode);
     return colorHelp;
 }
 

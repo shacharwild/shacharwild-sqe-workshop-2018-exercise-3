@@ -2,7 +2,8 @@ import $ from 'jquery';
 import {parseCode} from './code-analyzer';
 import {symbolicSubstitutionn} from './symbolicSubstitution';
 import {ifElseLines} from './symbolicSubstitution';
-import {createCFG} from './CFG';
+import {createCFG, finalGraph} from './CFG';
+import * as viz from 'viz.js';
 
 
 $(document).ready(function () {
@@ -12,7 +13,8 @@ $(document).ready(function () {
         let table = parseCode(codeToParse); //return array with table data
         //makeTable(result);
 
-        let v=createCFG(codeToParse,table,input);
+        let d=createCFG(codeToParse,table,input);
+        let  v= viz('digraph{'+d+'}');
         document.getElementById('graph').innerHTML=v;
         //new code's output
         //let finalCode = symbolicSubstitutionn(codeToParse,input, table);

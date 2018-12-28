@@ -4,6 +4,8 @@ import {parseCode} from '../src/js/code-analyzer';
 //import {startBuildingTable} from '../src/js/code-analyzer';
 import {convertToString} from '../src/js/symbolicSubstitution';
 import {symbolicSubstitutionn} from '../src/js/symbolicSubstitution';
+import {createCFG} from '../src/js/CFG';
+
 
 
 
@@ -175,7 +177,7 @@ describe('12', () => {
         let codeToParse='function x(y){'+'\n'+'return y;'+'\n'+'}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,1,table)),'function x(y){\n' +
+            convertToString(symbolicSubstitutionn(codeToParse,1,table)[3]),'function x(y){\n' +
                 'return y;\n' +
                 '}'
 
@@ -194,8 +196,11 @@ describe('13', () => {
             '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1,2',table)),'function func(x,y){\n' +
-            'y=2;\n' +
+            convertToString((symbolicSubstitutionn(codeToParse,'1,2',table))[3]),'function func(x,y){\n' +
+            'let a=x;\n' +
+            'let b;\n' +
+            'b=y;\n' +
+            'y=b;\n' +
             '}'
 
         );
@@ -211,7 +216,7 @@ describe('14', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,1,table)),
+            convertToString(symbolicSubstitutionn(codeToParse,1,table)[3]),
             'let a=5;\n' +
             'let x;\n' +
             'x=true;'
@@ -226,7 +231,7 @@ describe('14', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'',table)),
+            convertToString(symbolicSubstitutionn(codeToParse,'',table)[3]),
             'let a=[1,2,3];\n' +
             'let i=0;\n' +
             'a[i]=a[1];'
@@ -246,11 +251,8 @@ describe('15', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1, [1]',table)),
-            'function func(x,y){\n' +
-            'if ((x > y) && (y[1] == 0))\n' +
-            '  return true;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1, [1]',table)[3]),
+            'function func(x,y){\nif (x>y && y[1]==0)\n  return true;\n}'
 
         );
     });
@@ -266,17 +268,14 @@ describe('16', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)),
-            'function func(x,y){\n' +
-            'if (x == true)\n' +
-            '  return 5+3;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)[3]),
+            'function func(x,y){\nif (x==true)\n  return 5 + 3;\n}'
 
         );
     });
 
 });
-describe('16', () => {
+describe('17', () => {
     it('is substituting if statement with boolean expression correctly', () => {
         let codeToParse=
             'function func(x,y){\n'+
@@ -286,11 +285,8 @@ describe('16', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)),
-            'function func(x,y){\n' +
-            'if (x == true)\n' +
-            '  return 5+3;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)[3]),
+            'function func(x,y){\nif (x==true)\n  return 5 + 3;\n}'
 
         );
     });
@@ -306,14 +302,8 @@ describe('16', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)),
-            'function func(x,y){\n' +
-            'if (x == true)\n' +
-            'return x;\n' +
-            'else{\n' +
-            'return true;\n' +
-            '}\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)[3]),
+            'function func(x,y){\nif (x==true)\nreturn x;\nelse{\nreturn true;\n}\n}'
 
         );
     });
@@ -1038,7 +1028,7 @@ describe('17', () => {
             '}'
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1,2,3',table)),
+            convertToString((symbolicSubstitutionn(codeToParse,'1,2,3',table))[3]),
             'function foo(x, y, z){\n' +
             '    if ((x+1)+y < z){\n' +
             '        return ((x+y)+z)+(5);\n' +
@@ -1052,6 +1042,73 @@ describe('17', () => {
         );
     });
 
-
 });
 
+//THIRD ASSIGNMENT - CFG
+
+describe('17', () => {
+    it('is making CFG graph correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    let arr= [true,false,false];\n' +
+            '\n' +
+            '    \n' +
+            '\n' +
+            '    if (b >= z) {\n' +
+            '        c = c + 1;\n' +
+            '      if (arr[c]!=arr[c+1])\n' +
+            '       return true;\n' +
+            '    \n' +
+            '    }else if (b < z /2) {\n' +
+            '        c = c + x + 5;\n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            '    }\n' +
+            '    \n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,4')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0\n' +
+            ' arr= [true,false,false]",shape=box,color=green]\n' +
+            'n2 [label="(2)\n' +
+            'b >= z",shape=diamond,color=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = c + 1",shape=box,color=green]\n' +
+            'n4 [label="(4)\n' +
+            'arr[c]!=arr[c+1]",shape=diamond,color=green]\n' +
+            'n5 [label="(5)\n' +
+            'return true",shape=box]\n' +
+            'n6 [label="(6)\n' +
+            'return c",shape=box,color=green]\n' +
+            'n7 [label="(7)\n' +
+            'b < z /2",shape=diamond]\n' +
+            'n8 [label="(8)\n' +
+            'c = c + x + 5",shape=box]\n' +
+            'n9 [label="(9)\n' +
+            'c = c + z + 5",shape=box]\n' +
+            'n13 [label="(13)\n' +
+            'exit", style="rounded"]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n7 [label="false"]\n' +
+            'n3 -> n4 []\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n6 [label="false"]\n' +
+            'n7 -> n8 [label="true"]\n' +
+            'n7 -> n9 [label="false"]\n' +
+            'n8 -> n6 []\n' +
+            'n9 -> n6 []\n' +
+            '\n' +
+            'n1 -> n2 []'
+
+        );
+    });
+});

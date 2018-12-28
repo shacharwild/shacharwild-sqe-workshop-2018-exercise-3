@@ -1,9 +1,9 @@
 import * as escodegen from 'escodegen';
-
 const esgraph = require('esgraph');
 import * as esprima from 'esprima';
 import * as viz from 'viz.js';
 import {symbolicSubstitutionn} from './symbolicSubstitution';
+
 export {createCFG};
 
 let currentNumber=1;
@@ -13,6 +13,7 @@ let conditionsResult=new Map();
 let hadCondition=false;
 let notToBeMerged=[]; //statements that appear STRAIGHT after ELSE -> they are not mergable
 let conditionsType=new Map();
+let finalGraph='';
 /*
 const statementType = {
     'VariableDeclaration' : handleNormal,
@@ -29,6 +30,7 @@ function init(){
     hadCondition=false;
     notToBeMerged=[];
     conditionsType=new Map(); //<condition, type(while,if..)>
+    finalGraph='';
 }
 
 function createCFG(codeToParse,table,input) {
@@ -43,14 +45,14 @@ function createCFG(codeToParse,table,input) {
     MakeConditionsResult(colorHelp);
     graphLines=colorGraph(graphLines);
     graphLines = indexNodes(graphLines);//add index to each node
-    let d=''; //display the graph
+    finalGraph=''; //display the graph
     for (let i=1; i<graphLines.length; i++){
-        d=d+graphLines[i]+'';
+        finalGraph=finalGraph+graphLines[i]+'';
         if (i<graphLines.length-1)
-            d=d+'\n';
+            finalGraph=finalGraph+'\n';
     }
-    let  v= viz('digraph{'+d+'}');
-    return v;  }
+    return finalGraph;
+}
 
 
 
@@ -67,7 +69,7 @@ function findUnMergable(codeToParse){
 
             if (i+1<code.length) {
                 let temp=code[i+1].replace(/\s/g, '');
-                if (temp.length>1 && temp.substring(0,6)!='return' && temp.substring(0,5)!='while' && temp.substring(0,2)!='if' && temp.substring(0,4)!='else') {
+                if (temp.length>1 && temp.substring(0,6)!='return' && !temp.includes('while')&& !temp.includes('if') && !temp.includes('else')) {
                     let unMergable = code[i + 1];
                     unMergable = esprima.parseScript(unMergable + '');
                     unMergable = escodegen.generate(unMergable); //convert from JSON to string
@@ -127,25 +129,31 @@ function colorGraph(graphLines){
 function recursiveColoring(graphLines,coloredNode, coloredNode_line){
     //if the colored node is condition
     if (isCond(coloredNode_line)){
-        let firstCond=conditionsResult.keys().next().value;
-        let lineResult = conditionsResult.get(firstCond);
-        let condType = conditionsType.get(firstCond);
         let label = getLabel(coloredNode_line);
+        let firstCond='';
+        let lineResult='';
 
-        if (label==firstCond){
-            conditionsResult.delete(firstCond);
-            conditionsType.delete(firstCond);
-            let nextNode = getCondNextNode(graphLines,coloredNode,lineResult);
-            let nextNode_line = getNodeLine(graphLines,nextNode);
-            graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
-            graphLines= recursiveColoring(graphLines, nextNode,graphLines[nextNode_line]);
-            if (condType=='while statement'){
-                let nextNode = getCondNextNode(graphLines,coloredNode,false); //if while ALWAYS color false
-                let nextNode_line = getNodeLine(graphLines,nextNode);
-                graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
-                graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
+        for (let [cond, line] of conditionsResult) {
+            if (label==cond) {
+                firstCond = cond;
+                lineResult=line;
             }
         }
+
+        let condType = conditionsType.get(firstCond);
+        conditionsResult.delete(firstCond);
+        conditionsType.delete(firstCond);
+        let nextNode = getCondNextNode(graphLines,coloredNode,lineResult);
+        let nextNode_line = getNodeLine(graphLines,nextNode);
+        graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
+        graphLines= recursiveColoring(graphLines, nextNode,graphLines[nextNode_line]);
+        if (condType=='while statement'){
+            let nextNode = getCondNextNode(graphLines,coloredNode,false); //if while ALWAYS color false
+            let nextNode_line = getNodeLine(graphLines,nextNode);
+            graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
+            graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
+        }
+
     }
     //normal colored node
     else{
@@ -235,6 +243,7 @@ function updateGraph(graphLines){
             let new_node_name = 'n'+currentNumber;
             graphLines[i]=addShape(line,'normal');
             graphLines[i]=graphLines[i].replace(oldName,new_node_name); //replace with merged name
+            graphLines[i]=graphLines[i].replace(new RegExp(';', 'g'), ''); //remove let from previosu node..
             graphLines = replaceWithNewNode(oldName,new_node_name,graphLines);
         }
         else if (parsedLine=='' || ( parsedLine.body.length==1 && parsedLine.body[0].expression!=null && parsedLine.body[0].expression.type=='BinaryExpression')){
@@ -332,7 +341,7 @@ function getLabel(line){
 
 //if let or assignment
 function isLetStatement(line){
-    if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==')) || line.includes('++')|| line.includes('--')) //let or has ONE '='
+    if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==') && !line.includes('>=') && !line.includes('<=') && !line.includes('!=') ) || line.includes('++')|| line.includes('--')) //let or has ONE '='
     // ((line.substring(0,3)=='let'  | line.includes('++')|| line.includes('--')))
         return true;
     return false;
