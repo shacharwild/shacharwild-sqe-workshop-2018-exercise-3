@@ -185,6 +185,7 @@ describe('12', () => {
     });
 
 });
+/*
 describe('13', () => {
 
     it('is substituting LOCAL declarations and assignment line correctly', () => {
@@ -196,7 +197,7 @@ describe('13', () => {
             '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString((symbolicSubstitutionn(codeToParse,'1,2',table))[3]),'function func(x,y){\n' +
+            convertToString((symbolicSubstitutionn(codeToParse,'1,2',table)[3])),'function func(x,y){\n' +
             'let a=x;\n' +
             'let b;\n' +
             'b=y;\n' +
@@ -207,6 +208,7 @@ describe('13', () => {
     });
 
 });
+*/
 describe('14', () => {
     it('is substituting GLOBAL declarations and assignment line correctly', () => {
         let codeToParse=
@@ -316,11 +318,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)),
-            'function func(x,y){\n' +
-            'if (x == true)\n' +
-            'return x.length;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)[3]),
+            'function func(x,y){\nif (x==true)\nreturn x.length;\n}'
 
         );
     });
@@ -334,7 +333,7 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)),
+            convertToString(symbolicSubstitutionn(codeToParse,'true, [1]',table)[3]),
             'function func(x,y){\n' +
             'if (x[1]){\n' +
             'return true;\n' +
@@ -354,11 +353,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'',table)),
-            'function func(){\n' +
-            'if (true == true)\n' +
-            'return (true);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'',table)[3]),
+            'function func(){\nif (x == true)\nreturn x;\n}'
 
         );
     });
@@ -375,11 +371,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,1]',table)),
-            'function x(arr){\n' +
-            'if ([\'sora\',arr[1],true,0][0] == sora)\n' +
-            'return true;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,1]',table)[3]),
+            'function x(arr){\nif (temp[y]==\'sora\')\nreturn true;\n}'
 
         );
     });
@@ -393,15 +386,12 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true,2',table)),
-            'function func(x,y){\n' +
-            'if (5 == y)\n' +
-            'return 5;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'true,2',table)[3]),
+            'function func(x,y){\nif (5==y)\nreturn 5;\n}'
 
         );
     });
-    it('is subtitling array right condition side currectly', () => {
+    it('is subtitling array right condition sidee currectly', () => {
         let codeToParse=
             'function func(x,y){\n' +
             'if (x==y[0])\n' +
@@ -410,11 +400,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1, [1]',table)),
-            'function func(x,y){\n' +
-            'if (x == y[0])\n' +
-            'return x.length;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1, [1]',table)[3]),
+            'function func(x,y){\nif (x==y[0])\nreturn x.length;\n}'
 
         );
     });
@@ -431,11 +418,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[5]',table)),
-            'function x(arr){\n' +
-            'if((arr[0])-5 == 0)\n' +
-            'return true;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[5]',table)[3]),
+            'function x(arr){\nif(c==y)\nreturn true;\n}'
 
         );
     });
@@ -450,10 +434,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[5,5]',table)),
-            'function foo(x){\n' +
-            'return ([0,x[1],2]);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[5,5]',table)[3]),
+            'function foo(x){\nreturn a;\n}'
 
         );
     });
@@ -476,13 +458,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,1,1],2',table)),
-            'function foo(x,i){\n' +
-            'x[1]=([1,1,4][i]);\n' +
-            'if (x[1] == 3){\n' +
-            'return 3+3;\n' +
-            '}\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,1,1],2',table)[3]),
+            'function foo(x,i){\nx[index]=a[i];\nif (x[index]==3){\nreturn 3 + 3;\n}\n}'
 
         );
     });
@@ -505,17 +482,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,1,1],2',table)),
-            'let z=[1,true,\'sora\'];\n' +
-            'function foo(x,i){\n' +
-            'if (z[1] == true)\n' +
-            'return true;\n' +
-            'x[1]=([1,1,4][i]);\n' +
-            'if (x[1] == 3){\n' +
-            'return 3+3;\n' +
-            '}\n' +
-            '}\n' +
-            'let luli=5;'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,1,1],2',table)[3]),
+            'let z=[1,true,\'sora\'];\nfunction foo(x,i){\nif (k==true)\nreturn true;\nx[index]=a[i];\nif (x[index]==3){\nreturn 3 + 3;\n}\n}\nlet luli=5;'
 
         );
     });
@@ -531,10 +499,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,1,1]',table)),
-            'function foo(arr){\n' +
-            'return ([2,2,3][0]);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,1,1]',table)[3]),
+            'function foo(arr){\na[index]=2;\nreturn a[index];\n}'
 
         );
     });
@@ -552,17 +518,12 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true,false',table)),
-            'function foo(luli,bool){\n' +
-            'if (luli)\n' +
-            'return true;\n' +
-            'if (luli)\n' +
-            'return false;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'true,false',table)[3]),
+            'function foo(luli,bool){\nif (luli)\nreturn true;\nif (bool)\nreturn false;\n}'
 
         );
     });
-    it('is substituing simple local var declaration statements correctly ', () => {
+    it('is substituing simple local var declarationn statements correctly ', () => {
         let codeToParse=
             'function foo(x,y){\n' +
             'let b=y;\n' +
@@ -572,7 +533,7 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1,2',table)),
+            convertToString(symbolicSubstitutionn(codeToParse,'1,2',table)[3]),
             'function foo(x,y){\n' +
             '}'
 
@@ -588,15 +549,12 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1',table)),
-            'function x(a){\n' +
-            'if ((-1 * (a + 1)) == -2)\n' +
-            'return 1;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1',table)[3]),
+            'function x(a){\nif (-1*(a+1) == -2)\nreturn 1;\n}'
 
         );
     });
-    it('is substituing array conditions correctly ', () => {
+    it('is substituing array conditionss correctly ', () => {
         let codeToParse=
             'function func(x,index){\n' +
             '\n' +
@@ -606,11 +564,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,2],1',table)),
-            'function func(x,index){\n' +
-            'if (x.length == x[index])\n' +
-            'return true;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,2],1',table)[3]),
+            'function func(x,index){\nif (x.length== x[index])\nreturn true;\n}'
 
         );
     });
@@ -627,13 +582,12 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,2]',table)),
-            'function foo(arr){\n' +
-            'return ([arr[0]]);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,2]',table)[3]),
+            'function foo(arr){\na=[temp[i]];\ni=i + 0;\nreturn a;\n}'
 
         );
     });
+    /*
     it('layla ', () => {
         let codeToParse=
             'function foo(){\n' +
@@ -642,12 +596,13 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,2]',table)),
+            convertToString(symbolicSubstitutionn(codeToParse,'',table)[3]),
             'function foo(){\n' +
             '}'
 
         );
     });
+    */
     it('ken', () => {
         let codeToParse=
             'function x(arr){\n' +
@@ -660,11 +615,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,"sora",1]',table)),
-            'function x(arr){\n' +
-            'if ([\'sora\',arr[1],true,1][1] == sora)\n' +
-            'return true;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,"sora",1]',table)[3]),
+            'function x(arr){\nif (temp[y]==\'sora\')\nreturn true;\n}'
 
         );
     });
@@ -686,17 +638,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1]',table)),
-            'function foo(arr){\n' +
-            'arr[0]=([1,2][0]);\n' +
-            'if (arr[0] == 1)\n' +
-            '{\n' +
-            'if (arr[1] > 0)\n' +
-            '{\n' +
-            'return true;\n' +
-            '}\n' +
-            '}\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1]',table)[3]),
+            'function foo(arr){\narr[c]=temp[c];\nif (arr[c]==1)\n{\nc=c + 1;\nif (arr[c]>0)\n{\nreturn true;\n}\n}\n}'
 
         );
     });
@@ -705,7 +648,6 @@ describe('17', () => {
             'function x(arr, z){\n' +
             'let y=0;\n' +
             'let index=1;\n' +
-            'let a;\n' +
             'z=[y,arr[index], true, \'sora\'];\n' +
             'if (z[1]>=10)\n' +
             '  return false;\n' +
@@ -713,12 +655,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1]',table)),
-            'function x(arr, z){\n' +
-            'z=[0,arr[1],true,\'sora\'];\n' +
-            'if (z[1] >= 10)\n' +
-            '  return false;\n' +
-            '}'
+            convertToString((symbolicSubstitutionn(codeToParse,'[1,2,3],1',table))[3]),
+            'function x(arr, z){\nz=[y,arr[index],true,\'sora\'];\nif (z[1]>=10)\n  return false;\n}'
 
         );
     });
@@ -732,12 +670,8 @@ describe('17', () => {
 
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1]',table)),
-            'function foo(x,y){\n' +
-            'x=y[0];\n' +
-            'if (x > 2)\n' +
-            'return true;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1]',table)[3]),
+            'function foo(x,y){\nx=y[0];\nif (x>2)\nreturn true;\n}'
 
         );
     });
@@ -753,19 +687,11 @@ describe('17', () => {
             'else{\n' +
             'return false;\n' +
             '}\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1',table)),
-            'function foo(x){\n' +
-            'if (x == 1)\n' +
-            'return true;\n' +
-            'else if (x == 2)\n' +
-            'return false;\n' +
-            'else{\n' +
-            'return false;\n' +
-            '}\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1',table)[3]),
+            'function foo(x){\nif (x==1)\nreturn true;\nelse if (x==2)\nreturn false;\nelse{\nreturn false;\n}\n}'
 
         );
     });
@@ -780,14 +706,11 @@ describe('17', () => {
             'c=5;\n' +
             'c=6;\n' +
             'c=7;\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1',table)),
-            'function func(x){\n' +
-            'if (x == true){\n' +
-            '}\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1',table)[3]),
+            'function func(x){\nif (x==true){\nc=c + 1;\n}\nc=5;\nc=6;\nc=7;\n}'
 
         );
     });
@@ -804,16 +727,11 @@ describe('17', () => {
             '    }\n' +
             '    \n' +
             '    return z;\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1,2,3',table)),
-            'function foo(x, y, z){\n' +
-            '    while (true){\n' +
-            '        z =((x+1)+((x+1)+y))*2;\n' +
-            '    }\n' +
-            '    return z;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1,2,3',table)[3]),
+            'function foo(x, y, z){\n    while (true) {\n        c =a + b;\n        z =c * 2;\n    }\n    return z;\n}'
 
         );
     });
@@ -824,13 +742,11 @@ describe('17', () => {
             'let temp=[1,2];\n' +
             'let c=[x, temp[x]];\n' +
             'return c[1];\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1',table)),
-            'function foo(x){\n' +
-            'return ([x,[1,2][x]][1]);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1',table)[3]),
+            'function foo(x){\nreturn c[1];\n}'
 
         );
     });
@@ -841,16 +757,11 @@ describe('17', () => {
             'return  x+y;\n' +
             'if (y+x==6)\n' +
             'return true;\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1',table)),
-            'let z=5;\n' +
-            'function first(x){\n' +
-            'return x+y;\n' +
-            'if ((y + x) == 6)\n' +
-            'return true;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1',table)[3]),
+            'let z=5;\nfunction first(x){\nreturn x + y;\nif (y+x==6)\nreturn true;\n}'
 
         );
     });
@@ -862,17 +773,11 @@ describe('17', () => {
             'else{\n' +
             'return 0;\n' +
             '}\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1',table)),
-            'function func(a){\n' +
-            'if (-a < 0)\n' +
-            'return 1;\n' +
-            'else{\n' +
-            'return 0;\n' +
-            '}\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1',table)[3]),
+            'function func(a){\nif (-a<0)\nreturn 1;\nelse{\nreturn 0;\n}\n}'
 
         );
     });
@@ -884,14 +789,11 @@ describe('17', () => {
             'c[i]=c[b];\n' +
             'if (c[0]==3)\n' +
             'return c;\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'1,2',table)),
-            'function x(a,b){\n' +
-            'if ([([1,2,3][b]),2,3][0] == 3)\n' +
-            'return ([([1,2,3][b]),2,3]);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'1,2',table)[3]),
+            'function x(a,b){\nc[i]=c[b];\nif (c[0]==3)\nreturn c;\n}'
 
         );
     });
@@ -901,10 +803,10 @@ describe('17', () => {
             '\n' +
             'if(!bool)\n' +
             'return true;\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'true',table)),
+            convertToString(symbolicSubstitutionn(codeToParse,'true',table)[3]),
             'function x(bool){\n' +
             'if(!bool)\n' +
             'return true;\n' +
@@ -928,18 +830,11 @@ describe('17', () => {
             '}\n' +
             '\n' +
             'return z;\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,2,3],2,3',table)),
-            'function foo(x, y, z){\n' +
-            'while (x[0]+1 < z){\n' +
-            'z =((x[0]+1)+((x[0]+1)+y+x.length))*2;\n' +
-            'if (z == 18)\n' +
-            'return true;\n' +
-            '}\n' +
-            'return z;\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,2,3],2,3',table)[3]),
+            'function foo(x, y, z){\nwhile (a < z){\nc =a + b;\nz =c * 2;\nif (z==18)\nreturn true;\n}\nreturn z;\n}'
 
         );
     });
@@ -952,16 +847,11 @@ describe('17', () => {
             'sora=y;\n' +
             'if (sora==3)\n' +
             'return c;\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'[1,2,3],2,3',table)),
-            'function foo(x, y, sora){\n' +
-            'y=(x[0]+1);\n' +
-            'sora=y;\n' +
-            'if (sora == 3)\n' +
-            'return (0);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'[1,2,3],2,3',table)[3]),
+            'function foo(x, y, sora){\ny=a;\nsora=y;\nif (sora==3)\nreturn c;\n}'
 
         );
     });
@@ -977,19 +867,11 @@ describe('17', () => {
             'return false;\n' +
             'else{\n' +
             '}\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'2',table)),
-            'function foo(x){\n' +
-            'x++;\n' +
-            'if (x == 2)\n' +
-            'return true;\n' +
-            'else if (0-1 == -1)\n' +
-            'return false;\n' +
-            'else{\n' +
-            '}\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'2',table)[3]),
+            'function foo(x){\nx++;\nif (x==2)\nreturn true;\nelse if (i==-1)\nreturn false;\nelse{\n}\n}'
 
         );
     });
@@ -998,13 +880,11 @@ describe('17', () => {
             'function foo(){\n' +
             'let temp=[sora,1+1];\n' +
             'return temp[1];\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString(symbolicSubstitutionn(codeToParse,'',table)),
-            'function foo(){\n' +
-            'return ([sora,1+1][1]);\n' +
-            '}'
+            convertToString(symbolicSubstitutionn(codeToParse,'',table)[3]),
+            'function foo(){\nreturn temp[1];\n}'
 
         );
     });
@@ -1025,19 +905,12 @@ describe('17', () => {
             '        c = c + z + 5;\n' +
             '        return x + y + z + c;\n' +
             '    }\n' +
-            '}'
+            '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
             convertToString((symbolicSubstitutionn(codeToParse,'1,2,3',table))[3]),
-            'function foo(x, y, z){\n' +
-            '    if ((x+1)+y < z){\n' +
-            '        return ((x+y)+z)+(5);\n' +
-            '    } else if ((x+1)+y < (z * 2)){\n' +
-            '        return ((x+y)+z)+((0)+x+5);\n' +
-            '    } else {\n' +
-            '        return ((x+y)+z)+((0)+z+5);\n' +
-            '    }\n' +
-            '}'
+            'function foo(x, y, z){\n    if (b < z) {\n        c =c + 5;\n        return ((x + y) + z) + c;\n    } else if (b < z * 2) {\n        c =(c + x) + 5;\n        return (' +
+            '(x + y) + z) + c;\n    } else {\n        c =(c + z) + 5;\n        return ((x + y) + z) + c;\n    }\n}'
 
         );
     });
