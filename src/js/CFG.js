@@ -37,14 +37,15 @@ function createCFG(codeToParse,table,input) {
     MakeConditionsResult(colorHelp);
     graphLines=colorGraph(graphLines);
     graphLines = indexNodes(graphLines);//add index to each node
+    graphLines = removeExit(graphLines); //remove exit node
     finalGraph=''; //display the graph
     for (let i=1; i<graphLines.length; i++){
         finalGraph=finalGraph+graphLines[i]+'';
         if (i<graphLines.length-1)
             finalGraph=finalGraph+'\n';
     }
-    return finalGraph;
-}
+    return finalGraph;   }
+
 
 
 function findUnMergable(codeToParse){
@@ -109,6 +110,7 @@ function colorGraph(graphLines){
     let firstCond=conditionsResult.keys().next().value;
     let lineResult = conditionsResult.get(firstCond);
     conditionsResult.delete(firstCond);
+    let condType = conditionsType.get(firstCond);
     conditionsType.delete(firstCond);
     for (let i=1; i<graphLines.length ; i++){
         let label = getLabel(graphLines[i]);
@@ -120,12 +122,21 @@ function colorGraph(graphLines){
             let nextNode_line = getNodeLine(graphLines,nextNode);
             graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
             graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
-        }
+            graphLines= whileColorFirst(graphLines,condType,node_name);    }
         graphLines[i]=colorFirstNormal(graphLines[i]);
+    }
+    return graphLines;   }
+
+
+function whileColorFirst(graphLines,condType,node_name){
+    if (condType=='while statement'){
+        let nextNode = getCondNextNode(graphLines,node_name,false); //if while ALWAYS color false
+        let nextNode_line = getNodeLine(graphLines,nextNode);
+        graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
+        graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
     }
     return graphLines;
 }
-
 function colorFirstNormal(line){
     if (!hadCondition && !line.includes('->') && line!='') //lines before any condition
         line =colorNode(line);
@@ -474,6 +485,23 @@ function removeStart(n0,graphLines){
         if (index>-1) {
             graphLines.splice(i, 1);
             i--; //we removed item so index changed. so we dont miss item
+        }
+    }
+    if (n0=='exit'){
+
+    }
+
+    return graphLines;
+}
+
+//remove exit node (already removed its connections)
+function removeExit(graphLines){
+    for (let i=0; i<graphLines.length; i++){
+        let line=graphLines[i];
+        let label=getLabel(line);
+        if (label.includes('exit')){
+            graphLines.splice(i, 1);
+            continue;
         }
     }
     return graphLines;
