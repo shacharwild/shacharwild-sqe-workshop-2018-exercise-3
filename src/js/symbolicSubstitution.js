@@ -163,12 +163,9 @@ function handleVarDec(statement, locals) {
             newValue = insertLocal(statement.Name, statement.Value + '', finalCode, locals);
             newValue=calculate (newValue);
             locals.set(statement.Name + '', newValue);
-
-            countOld++;
-        }
+            countOld++;}
         else { //if AFTER the function - end globals
             finalCode.push({Line: code[countOld]});
-            //globals.set(statement.Name + '', newValue);
             countOld++;}}
     else { //outside the function - before the function
         globals.set(statement.Name + '', statement.Value);
@@ -193,11 +190,11 @@ function handleConditionStatement(statement,locals) {
     //finalCode.push({Line: code[countOld].substring(0, code[countOld].indexOf('(')) + '(' + newCondition + ')'+close});
     finalCode.push({Line: code[countOld]});
     countOld++;
-    if (statement.Type == 'if statement' || statement.Type == 'else if statement' || statement.Type == 'while statement') {
-        var condtionResult = conditionResult(newCondition);
-        ifElseLines.set((finalCode.length - 1) + '', condtionResult);
-        conditionsType.set((finalCode.length - 1) + '',statement.Type);
-    }
+    // if (statement.Type == 'if statement' || statement.Type == 'else if statement' || statement.Type == 'while statement') {
+    var condtionResult = conditionResult(newCondition);
+    ifElseLines.set((finalCode.length - 1) + '', condtionResult);
+    conditionsType.set((finalCode.length - 1) + '',statement.Type);
+    //}
 }
 
 //4
@@ -209,6 +206,7 @@ function handleReturn(statement, locals) {
     }
     else {
         var newValue = returnStatement(statement.Value + '', locals);
+        kaleidoStar.push({sora:'', layla:newValue});
         //finalCode.push({Line:returnStart+' '+newValue+';'});}
         finalCode.push({Line: returnStart + ' ' + statement.Value+ ';'});
     }
@@ -224,14 +222,12 @@ function handleAssignment(statement, locals){
         var computedLeft = checkComputedValue(assStart+'', locals).computedValue; //replace computed left side
         if (globals.has(computedLeft.substring(0,computedLeft.indexOf('[')))){ //if left is global
             replaceArrayValue(computedLeft, newValue,globals, arrName);
-            // finalCode.push({Line:computedLeft+'='+newValue+';'});
         }
         if (locals.has(arrName)) //if left is local
             replaceArrayValue(computedLeft,newValue,locals, arrName);   }
     else { //if left is not computed value, only regular var -> x=5;
         newValue=calculate(newValue);
         if (globals.has(statement.Name)) {
-            //finalCode.push({Line: assStart + '=' + newValue + ';'});
             globals.set(statement.Name + '', newValue); }
         else {
             locals.set(statement.Name + '', newValue);
@@ -513,9 +509,7 @@ function insertLocal(name, value, finalCode, locals){
             currentLine= updateLineLocal(currentLine,locals,check);}
         newValue = currentLine.substring(currentLine.indexOf('=') + 1, currentLine.indexOf(';')); //insert to locals
         newValue=newValue.replace(/\s/g, '');
-        //countOld++;
     }
-
     else{ noInitLocals(currentLine);}   return newValue;}
 
 
@@ -812,8 +806,8 @@ function localsToTemp(locals){
 }
 
 function skipEmptyLines(finalCode){
-    var x=true;
-    while (x) {
+    // var x=true;
+    while (countOld<code.length) {
         var stop = false;
         var sograim=false;
         var lie=false;
@@ -834,7 +828,7 @@ function skipEmptyLines(finalCode){
 
 function emptyLinesHelp1(lie,sograim,stop){
     var flags=[];
-    for (let i = 0; i < code[countOld].length && !stop; i++) {
+    for (let i = 0; countOld<code.length&& i < code[countOld].length && !stop; i++) {
         flags = emptyLinesHelp2(lie,sograim,stop,i);
         lie=flags[0].flag;
         sograim=flags[1].flag;

@@ -185,7 +185,7 @@ describe('12', () => {
     });
 
 });
-/*
+
 describe('13', () => {
 
     it('is substituting LOCAL declarations and assignment line correctly', () => {
@@ -197,18 +197,13 @@ describe('13', () => {
             '}';
         let table =parseCode(codeToParse); //make table
         assert.equal(
-            convertToString((symbolicSubstitutionn(codeToParse,'1,2',table)[3])),'function func(x,y){\n' +
-            'let a=x;\n' +
-            'let b;\n' +
-            'b=y;\n' +
-            'y=b;\n' +
-            '}'
+            convertToString((symbolicSubstitutionn(codeToParse,'1,2',table)[3])),'function func(x,y){\ny=y;\n}'
 
         );
     });
 
 });
-*/
+
 describe('14', () => {
     it('is substituting GLOBAL declarations and assignment line correctly', () => {
         let codeToParse=
@@ -587,7 +582,7 @@ describe('17', () => {
 
         );
     });
-    /*
+
     it('layla ', () => {
         let codeToParse=
             'function foo(){\n' +
@@ -602,7 +597,7 @@ describe('17', () => {
 
         );
     });
-    */
+
     it('ken', () => {
         let codeToParse=
             'function x(arr){\n' +
@@ -919,8 +914,8 @@ describe('17', () => {
 
 //THIRD ASSIGNMENT - CFG
 
-describe('17', () => {
-    it('is making CFG graph correctly', () => {
+describe('19', () => {
+    it('is making CFG graph  correctly', () => {
         let codeToParse=
             'function foo(x, y, z){\n' +
             '    let a = x + 1;\n' +
@@ -984,4 +979,371 @@ describe('17', () => {
 
         );
     });
+    it('is making CFG graph with while statement  correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    let arr= [true,false,false];\n' +
+            '\n' +
+            '    \n' +
+            '    \n' +
+            '    if (b!=z){\n' +
+            '     c=5;\n' +
+            '    }else if (b < z /2) {\n' +
+            '        c = c + x + 5;\n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            'while (b == z) {\n' +
+            '        c ++;\n' +
+            '    }\n' +
+            '    }\n' +
+            '    \n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,4')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0\n' +
+            ' arr= [true,false,false]",shape=box,color=green]\n' +
+            'n2 [label="(2)\n' +
+            'b!=z",shape=diamond,color=green]\n' +
+            'n3 [label="(3)\n' +
+            'c=5",shape=box]\n' +
+            'n4 [label="(4)\n' +
+            'return c",shape=box,color=green]\n' +
+            'n5 [label="(5)\n' +
+            'b < z /2",shape=diamond,color=green]\n' +
+            'n6 [label="(6)\n' +
+            'c = c + x + 5",shape=box]\n' +
+            'n7 [label="(7)\n' +
+            'c = c + z + 5",shape=box,color=green]\n' +
+            'n8 [label="(8)\n' +
+            'b == z",shape=diamond,color=green]\n' +
+            'n9 [label="(9)\n' +
+            'c ++",shape=box,color=green]\n' +
+            'n13 [label="(13)\n' +
+            'exit", style="rounded"]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n5 [label="false"]\n' +
+            'n3 -> n4 []\n' +
+            'n5 -> n6 [label="true"]\n' +
+            'n5 -> n7 [label="false"]\n' +
+            'n6 -> n4 []\n' +
+            'n7 -> n8 []\n' +
+            'n8 -> n9 [label="true"]\n' +
+            'n8 -> n4 [label="false"]\n' +
+            'n9 -> n8 []\n' +
+            '\n' +
+            'n1 -> n2 []'
+
+        );
+    });
+    it('is making CFG graph with nested loops  correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    let arr= [true,false];\n' +
+            '\n' +
+            '    \n' +
+            '    if (b <z) {\n' +
+            '        c = c + 5;\n' +
+            '\n' +
+            '      while (arr[0]!=true){\n' +
+            '        c=c+5;\n' +
+            '      }\n' +
+            '    \n' +
+            '    }else if (b < z /2) {\n' +
+            '        c = c + x + 5;\n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            '       x=\'sora\';\n' +
+            '    }\n' +
+            '    if (x==\'sora\'){\n' +
+            '     c=5;\n' +
+            '   }\n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,4')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0\n' +
+            ' arr= [true,false]",shape=box,color=green]\n' +
+            'n2 [label="(2)\n' +
+            'b <z",shape=diamond,color=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = c + 5",shape=box]\n' +
+            'n4 [label="(4)\n' +
+            'arr[0]!=true",shape=diamond]\n' +
+            'n5 [label="(5)\n' +
+            'c=c+5",shape=box]\n' +
+            'n6 [label="(6)\n' +
+            'x==\'sora\'",shape=diamond,color=green]\n' +
+            'n7 [label="(7)\n' +
+            'c=5",shape=box,color=green]\n' +
+            'n8 [label="(8)\n' +
+            'return c",shape=box,color=green]\n' +
+            'n9 [label="(9)\n' +
+            'b < z /2",shape=diamond,color=green]\n' +
+            'n10 [label="(10)\n' +
+            'c = c + x + 5",shape=box]\n' +
+            'n11 [label="(11)\n' +
+            'c = c + z + 5\n' +
+            'x=\'sora\'",shape=box,color=green]\n' +
+            'n16 [label="(16)\n' +
+            'exit", style="rounded"]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n9 [label="false"]\n' +
+            'n3 -> n4 []\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n6 [label="false"]\n' +
+            'n5 -> n4 []\n' +
+            'n6 -> n7 [label="true"]\n' +
+            'n6 -> n8 [label="false"]\n' +
+            'n7 -> n8 []\n' +
+            'n9 -> n10 [label="true"]\n' +
+            'n9 -> n11 [label="false"]\n' +
+            'n10 -> n6 []\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n11 -> n6 []'
+
+        );
+    });
+    it('is making CFG graph with only 2 statements correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '  let x=5;\n' +
+            '  return x; \n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,4')
+            ,
+            'n1 [label="(1)\n' +
+            ' x=5",shape=box,color=green]\n' +
+            'n2 [label="(2)\n' +
+            'return x",shape=box,color=green]\n' +
+            'n3 [label="(3)\n' +
+            'exit", style="rounded",color=green]\n' +
+            'n1 -> n2 []\n' +
+            ''
+
+        );
+    });
+    it('is making CFG graph with empty var declaration statement correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '  let a,b;\n' +
+            '   if (x==5)\n' +
+            '   return true;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,4')
+            ,
+            'n1 [label="(1)\n' +
+            ' a,b;",shape=box,color=green]\n' +
+            'n2 [label="(2)\n' +
+            'x==5",shape=diamond,color=green]\n' +
+            'n3 [label="(3)\n' +
+            'return true",shape=box,color=green]\n' +
+            'n4 [label="(4)\n' +
+            'exit", style="rounded",color=green]\n' +
+            'n1 -> n2 []\n' +
+            'n2 -> n3 [label="true"]\n' +
+            ''
+
+        );
+    });
+    it('is making CFG graph with nested if AND nested while correctly - 1', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    let arr= [true,false];\n' +
+            '\n' +
+            '    \n' +
+            '\n' +
+            '    if (b >= z) {\n' +
+            '        c = c + 5;\n' +
+            '      while (arr[0]==true){\n' +
+            '        c=c+5;\n' +
+            '      }\n' +
+            '    \n' +
+            '    }else if (b < z /2) {\n' +
+            '       c=5;\n' +
+            '       if (c==5){\n' +
+            '        arr[0]=true;\n' +
+            '        b=\'sora\';\n' +
+            '       }\n' +
+            '       else {\n' +
+            '       c = 6;\n' +
+            '         }\n' +
+            '      \n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            '    }\n' +
+            '    \n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,100')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0\n' +
+            ' arr= [true,false]",shape=box,color=green]\n' +
+            'n2 [label="(2)\n' +
+            'b >= z",shape=diamond,color=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = c + 5",shape=box]\n' +
+            'n4 [label="(4)\n' +
+            'arr[0]==true",shape=diamond]\n' +
+            'n5 [label="(5)\n' +
+            'c=c+5",shape=box]\n' +
+            'n6 [label="(6)\n' +
+            'return c",shape=box,color=green]\n' +
+            'n7 [label="(7)\n' +
+            'b < z /2",shape=diamond,color=green]\n' +
+            'n8 [label="(8)\n' +
+            'c=5",shape=box,color=green]\n' +
+            'n9 [label="(9)\n' +
+            'c==5",shape=diamond,color=green]\n' +
+            'n10 [label="(10)\n' +
+            'arr[0]=true\n' +
+            'b=\'sora\'",shape=box,color=green]\n' +
+            'n11 [label="(11)\n' +
+            'c = 6",shape=box]\n' +
+            'n12 [label="(12)\n' +
+            'c = c + z + 5",shape=box]\n' +
+            'n17 [label="(17)\n' +
+            'exit", style="rounded"]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n7 [label="false"]\n' +
+            'n3 -> n4 []\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n6 [label="false"]\n' +
+            'n5 -> n4 []\n' +
+            'n7 -> n8 [label="true"]\n' +
+            'n7 -> n12 [label="false"]\n' +
+            'n8 -> n9 []\n' +
+            'n9 -> n10 [label="true"]\n' +
+            'n9 -> n11 [label="false"]\n' +
+            'n11 -> n6 []\n' +
+            'n12 -> n6 []\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n10 -> n6 []'
+
+        );
+    });
+
+    it('is making CFG graph with nested if AND nested while correctly - 2', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    let arr= [true,false];\n' +
+            '\n' +
+            '    \n' +
+            '\n' +
+            '    if (b >= z) {\n' +
+            '        c = c + 5;\n' +
+            '      while (arr[0]==true){\n' +
+            '        c=c+5;\n' +
+            '      }\n' +
+            '    \n' +
+            '    }else if (b < z /2) {\n' +
+            '       c=5;\n' +
+            '       if (c==5){\n' +
+            '        arr[0]=true;\n' +
+            '        c=6;\n' +
+            '       }\n' +
+            '       else {\n' +
+            '       c = 6;\n' +
+            '         }\n' +
+            '      \n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            '    }\n' +
+            '     if (arr[0]!=true)\n' +
+            '      return x; \n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,100')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0\n' +
+            ' arr= [true,false]",shape=box,color=green]\n' +
+            'n2 [label="(2)\n' +
+            'b >= z",shape=diamond,color=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = c + 5",shape=box]\n' +
+            'n4 [label="(4)\n' +
+            'arr[0]==true",shape=diamond]\n' +
+            'n5 [label="(5)\n' +
+            'c=c+5",shape=box]\n' +
+            'n6 [label="(6)\n' +
+            'arr[0]!=true",shape=diamond,color=green]\n' +
+            'n7 [label="(7)\n' +
+            'return x",shape=box]\n' +
+            'n8 [label="(8)\n' +
+            'return c",shape=box,color=green]\n' +
+            'n9 [label="(9)\n' +
+            'b < z /2",shape=diamond,color=green]\n' +
+            'n10 [label="(10)\n' +
+            'c=5",shape=box,color=green]\n' +
+            'n11 [label="(11)\n' +
+            'c==5",shape=diamond,color=green]\n' +
+            'n12 [label="(12)\n' +
+            'arr[0]=true\n' +
+            'c=6",shape=box,color=green]\n' +
+            'n13 [label="(13)\n' +
+            'c = 6",shape=box]\n' +
+            'n14 [label="(14)\n' +
+            'c = c + z + 5",shape=box]\n' +
+            'n19 [label="(19)\n' +
+            'exit", style="rounded"]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n9 [label="false"]\n' +
+            'n3 -> n4 []\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n6 [label="false"]\n' +
+            'n5 -> n4 []\n' +
+            'n6 -> n7 [label="true"]\n' +
+            'n6 -> n8 [label="false"]\n' +
+            'n9 -> n10 [label="true"]\n' +
+            'n9 -> n14 [label="false"]\n' +
+            'n10 -> n11 []\n' +
+            'n11 -> n12 [label="true"]\n' +
+            'n11 -> n13 [label="false"]\n' +
+            'n13 -> n6 []\n' +
+            'n14 -> n6 []\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n12 -> n6 []'
+
+        );
+    });
+
 });

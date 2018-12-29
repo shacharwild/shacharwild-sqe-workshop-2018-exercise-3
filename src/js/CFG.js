@@ -7,7 +7,7 @@ import {symbolicSubstitutionn} from './symbolicSubstitution';
 export {createCFG};
 
 let currentNumber=1;
-let graphLines=[];
+//let graphLines=[];
 let mergedNodes=new Map(); //helps to avoid overriding a merged node
 let conditionsResult=new Map();
 let hadCondition=false;
@@ -24,7 +24,7 @@ const statementType = {
 
 function init(){
     currentNumber=1;
-    graphLines=[];
+    //graphLines=[];
     mergedNodes=new Map();
     conditionsResult=new Map(); // <cond, true/false>
     hadCondition=false;
@@ -62,9 +62,7 @@ function findUnMergable(codeToParse){
         let line=code[i];
         //else (NOT else if) OR statements that comes after }
         if ((line.includes('else') && !line.includes('else if')) || (line.includes('}') && !line.match(/[a-z]/i) )){
-            while ( i+1<code.length && !code[i+1].match(/[a-z]/i)) { //if empty line
-                i++;
-            }
+            i=skipThisPoint(i,code);
             //remove the /t from beginning
 
             if (i+1<code.length) {
@@ -80,6 +78,14 @@ function findUnMergable(codeToParse){
         }
     }
 
+}
+
+
+function skipThisPoint(i,code){
+    while (i + 1 < code.length && !code[i + 1].match(/[a-z]/i)) { //if empty line
+        i++;
+    }
+    return i;
 }
 function MakeConditionsResult(colorHelp){
     let finalCode = colorHelp[0];
@@ -112,14 +118,16 @@ function colorGraph(graphLines){
             let nextNode_line = getNodeLine(graphLines,nextNode);
             graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
             graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
+            /*
             if (condType=='while statement'){
                 let nextNode = getCondNextNode(graphLines,node_name,false); //if while ALWAYS color false
                 let nextNode_line = getNodeLine(graphLines,nextNode);
                 graphLines[nextNode_line] =colorNode(graphLines[nextNode_line]);
                 graphLines=recursiveColoring(graphLines,nextNode, graphLines[nextNode_line]);
             }
+            */
         }
-        if (!hadCondition) //lines before any condition
+        if (!hadCondition && !graphLines[i].includes('->') && graphLines[i]!='') //lines before any condition
             graphLines[i] =colorNode(graphLines[i]);
     }
     return graphLines;
@@ -139,6 +147,8 @@ function recursiveColoring(graphLines,coloredNode, coloredNode_line){
                 lineResult=line;
             }
         }
+        if (firstCond=='') //if didn't found it (been in this condition-went beck to while)
+            return graphLines;
 
         let condType = conditionsType.get(firstCond);
         conditionsResult.delete(firstCond);
@@ -284,7 +294,7 @@ function updateGraph(graphLines){
 
         }
     }
-    return graphLines;
+    //return graphLines;
 }
 
 // add index to each node
@@ -342,7 +352,6 @@ function getLabel(line){
 //if let or assignment
 function isLetStatement(line){
     if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==') && !line.includes('>=') && !line.includes('<=') && !line.includes('!=') ) || line.includes('++')|| line.includes('--')) //let or has ONE '='
-    // ((line.substring(0,3)=='let'  | line.includes('++')|| line.includes('--')))
         return true;
     return false;
 }
