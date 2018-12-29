@@ -244,31 +244,35 @@ function updateGraph(graphLines){
         let parsedLine='';
         if (label=='exit') //if end, remove exit's connections
             return removeStart(oldName,graphLines) ; //remove exit..
-
         parsedLine = findParsed(parsedLine,label);
-
-
         if (label.substring(0,6)=='return'){
             graphLines = updateReturnNode(graphLines,i,line,oldName);
+            continue;
         }
-
-        //if condition - only update node's number
-        else if (parsedLine=='' || ( parsedLine.body.length==1 && parsedLine.body[0].expression!=null && parsedLine.body[0].expression.type=='BinaryExpression')){
-            graphLines = updateCondNode(graphLines,i,oldName,line);
-        }
-
-        else{
-            let toReturn=[];
-            toReturn =  updateNormalNode(graphLines,i,oldName,label);
+        else{ //condition or normal node:
+            let toReturn = keepUpdating(graphLines,i,oldName,label,line,parsedLine);
             graphLines = toReturn[0];
             i = toReturn[1];
         }
+    }}
+
+
+
+function keepUpdating(graphLines,i,oldName,label,line,parsedLine){
+    let toReturn=[];
+    //if condition - only update node's number
+    if (parsedLine=='' || ( parsedLine.body.length==1 && parsedLine.body[0].expression!=null && parsedLine.body[0].expression.type=='BinaryExpression')){
+        graphLines = updateCondNode(graphLines,i,oldName,line);
+        toReturn[0]=graphLines;
+        toReturn[1]=i;
+        return toReturn;
     }
-    //return graphLines;
+
+    else{
+        toReturn =  updateNormalNode(graphLines,i,oldName,label);
+        return toReturn;
+    }
 }
-
-
-
 function findParsed(parsedLine,label){
     if (!label.includes('return') || label.includes('->'))
     {

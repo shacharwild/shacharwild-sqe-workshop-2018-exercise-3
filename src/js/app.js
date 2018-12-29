@@ -1,8 +1,6 @@
 import $ from 'jquery';
 import {parseCode} from './code-analyzer';
-import {symbolicSubstitutionn} from './symbolicSubstitution';
-import {ifElseLines} from './symbolicSubstitution';
-import {createCFG, finalGraph} from './CFG';
+import {createCFG} from './CFG';
 import * as viz from 'viz.js';
 
 
@@ -27,7 +25,7 @@ $(document).ready(function () {
     });
 });
 
-
+/*
 //displays the new code
 function showNewCode(finalCode){
     var html='';
