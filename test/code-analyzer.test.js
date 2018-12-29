@@ -913,7 +913,6 @@ describe('17', () => {
 });
 
 //THIRD ASSIGNMENT - CFG
-
 describe('19', () => {
     it('is making CFG graph  correctly', () => {
         let codeToParse=
@@ -946,17 +945,17 @@ describe('19', () => {
             ' a = x + 1\n' +
             ' b = a + y\n' +
             ' c = 0\n' +
-            ' arr= [true,false,false]",shape=box,color=green]\n' +
+            ' arr= [true,false,false]",shape=box,style=filled,fillcolor=green]\n' +
             'n2 [label="(2)\n' +
-            'b >= z",shape=diamond,color=green]\n' +
+            'b >= z",shape=diamond,style=filled,fillcolor=green]\n' +
             'n3 [label="(3)\n' +
-            'c = c + 1",shape=box,color=green]\n' +
+            'c = c + 1",shape=box,style=filled,fillcolor=green]\n' +
             'n4 [label="(4)\n' +
-            'arr[c]!=arr[c+1]",shape=diamond,color=green]\n' +
+            'arr[c]!=arr[c+1]",shape=diamond,style=filled,fillcolor=green]\n' +
             'n5 [label="(5)\n' +
             'return true",shape=box]\n' +
             'n6 [label="(6)\n' +
-            'return c",shape=box,color=green]\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
             'n7 [label="(7)\n' +
             'b < z /2",shape=diamond]\n' +
             'n8 [label="(8)\n' +
@@ -1010,23 +1009,23 @@ describe('19', () => {
             ' a = x + 1\n' +
             ' b = a + y\n' +
             ' c = 0\n' +
-            ' arr= [true,false,false]",shape=box,color=green]\n' +
+            ' arr= [true,false,false]",shape=box,style=filled,fillcolor=green]\n' +
             'n2 [label="(2)\n' +
-            'b!=z",shape=diamond,color=green]\n' +
+            'b!=z",shape=diamond,style=filled,fillcolor=green]\n' +
             'n3 [label="(3)\n' +
             'c=5",shape=box]\n' +
             'n4 [label="(4)\n' +
-            'return c",shape=box,color=green]\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
             'n5 [label="(5)\n' +
-            'b < z /2",shape=diamond,color=green]\n' +
+            'b < z /2",shape=diamond,style=filled,fillcolor=green]\n' +
             'n6 [label="(6)\n' +
             'c = c + x + 5",shape=box]\n' +
             'n7 [label="(7)\n' +
-            'c = c + z + 5",shape=box,color=green]\n' +
+            'c = c + z + 5",shape=box,style=filled,fillcolor=green]\n' +
             'n8 [label="(8)\n' +
-            'b == z",shape=diamond,color=green]\n' +
+            'b == z",shape=diamond,style=filled,fillcolor=green]\n' +
             'n9 [label="(9)\n' +
-            'c ++",shape=box,color=green]\n' +
+            'c ++",shape=box,style=filled,fillcolor=green]\n' +
             'n13 [label="(13)\n' +
             'exit", style="rounded"]\n' +
             'n2 -> n3 [label="true"]\n' +
@@ -1079,9 +1078,9 @@ describe('19', () => {
             ' a = x + 1\n' +
             ' b = a + y\n' +
             ' c = 0\n' +
-            ' arr= [true,false]",shape=box,color=green]\n' +
+            ' arr= [true,false]",shape=box,style=filled,fillcolor=green]\n' +
             'n2 [label="(2)\n' +
-            'b <z",shape=diamond,color=green]\n' +
+            'b <z",shape=diamond,style=filled,fillcolor=green]\n' +
             'n3 [label="(3)\n' +
             'c = c + 5",shape=box]\n' +
             'n4 [label="(4)\n' +
@@ -1089,18 +1088,18 @@ describe('19', () => {
             'n5 [label="(5)\n' +
             'c=c+5",shape=box]\n' +
             'n6 [label="(6)\n' +
-            'x==\'sora\'",shape=diamond,color=green]\n' +
+            'x==\'sora\'",shape=diamond,style=filled,fillcolor=green]\n' +
             'n7 [label="(7)\n' +
-            'c=5",shape=box,color=green]\n' +
+            'c=5",shape=box,style=filled,fillcolor=green]\n' +
             'n8 [label="(8)\n' +
-            'return c",shape=box,color=green]\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
             'n9 [label="(9)\n' +
-            'b < z /2",shape=diamond,color=green]\n' +
+            'b < z /2",shape=diamond,style=filled,fillcolor=green]\n' +
             'n10 [label="(10)\n' +
             'c = c + x + 5",shape=box]\n' +
             'n11 [label="(11)\n' +
             'c = c + z + 5\n' +
-            'x=\'sora\'",shape=box,color=green]\n' +
+            'x=\'sora\'",shape=box,style=filled,fillcolor=green]\n' +
             'n16 [label="(16)\n' +
             'exit", style="rounded"]\n' +
             'n2 -> n3 [label="true"]\n' +
@@ -1132,11 +1131,11 @@ describe('19', () => {
         assert.equal(createCFG(codeToParse,table,'1,2,4')
             ,
             'n1 [label="(1)\n' +
-            ' x=5",shape=box,color=green]\n' +
+            ' x=5",shape=box,style=filled,fillcolor=green]\n' +
             'n2 [label="(2)\n' +
-            'return x",shape=box,color=green]\n' +
+            'return x",shape=box,style=filled,fillcolor=green]\n' +
             'n3 [label="(3)\n' +
-            'exit", style="rounded",color=green]\n' +
+            'exit", style="rounded",style=filled,fillcolor=green]\n' +
             'n1 -> n2 []\n' +
             ''
 
@@ -1154,13 +1153,13 @@ describe('19', () => {
         assert.equal(createCFG(codeToParse,table,'1,2,4')
             ,
             'n1 [label="(1)\n' +
-            ' a,b;",shape=box,color=green]\n' +
+            ' a,b;",shape=box,style=filled,fillcolor=green]\n' +
             'n2 [label="(2)\n' +
-            'x==5",shape=diamond,color=green]\n' +
+            'x==5",shape=diamond,style=filled,fillcolor=green]\n' +
             'n3 [label="(3)\n' +
-            'return true",shape=box,color=green]\n' +
+            'return true",shape=box,style=filled,fillcolor=green]\n' +
             'n4 [label="(4)\n' +
-            'exit", style="rounded",color=green]\n' +
+            'exit", style="rounded",style=filled,fillcolor=green]\n' +
             'n1 -> n2 []\n' +
             'n2 -> n3 [label="true"]\n' +
             ''
@@ -1207,9 +1206,9 @@ describe('19', () => {
             ' a = x + 1\n' +
             ' b = a + y\n' +
             ' c = 0\n' +
-            ' arr= [true,false]",shape=box,color=green]\n' +
+            ' arr= [true,false]",shape=box,style=filled,fillcolor=green]\n' +
             'n2 [label="(2)\n' +
-            'b >= z",shape=diamond,color=green]\n' +
+            'b >= z",shape=diamond,style=filled,fillcolor=green]\n' +
             'n3 [label="(3)\n' +
             'c = c + 5",shape=box]\n' +
             'n4 [label="(4)\n' +
@@ -1217,16 +1216,16 @@ describe('19', () => {
             'n5 [label="(5)\n' +
             'c=c+5",shape=box]\n' +
             'n6 [label="(6)\n' +
-            'return c",shape=box,color=green]\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
             'n7 [label="(7)\n' +
-            'b < z /2",shape=diamond,color=green]\n' +
+            'b < z /2",shape=diamond,style=filled,fillcolor=green]\n' +
             'n8 [label="(8)\n' +
-            'c=5",shape=box,color=green]\n' +
+            'c=5",shape=box,style=filled,fillcolor=green]\n' +
             'n9 [label="(9)\n' +
-            'c==5",shape=diamond,color=green]\n' +
+            'c==5",shape=diamond,style=filled,fillcolor=green]\n' +
             'n10 [label="(10)\n' +
             'arr[0]=true\n' +
-            'b=\'sora\'",shape=box,color=green]\n' +
+            'b=\'sora\'",shape=box,style=filled,fillcolor=green]\n' +
             'n11 [label="(11)\n' +
             'c = 6",shape=box]\n' +
             'n12 [label="(12)\n' +
@@ -1294,9 +1293,9 @@ describe('19', () => {
             ' a = x + 1\n' +
             ' b = a + y\n' +
             ' c = 0\n' +
-            ' arr= [true,false]",shape=box,color=green]\n' +
+            ' arr= [true,false]",shape=box,style=filled,fillcolor=green]\n' +
             'n2 [label="(2)\n' +
-            'b >= z",shape=diamond,color=green]\n' +
+            'b >= z",shape=diamond,style=filled,fillcolor=green]\n' +
             'n3 [label="(3)\n' +
             'c = c + 5",shape=box]\n' +
             'n4 [label="(4)\n' +
@@ -1304,20 +1303,20 @@ describe('19', () => {
             'n5 [label="(5)\n' +
             'c=c+5",shape=box]\n' +
             'n6 [label="(6)\n' +
-            'arr[0]!=true",shape=diamond,color=green]\n' +
+            'arr[0]!=true",shape=diamond,style=filled,fillcolor=green]\n' +
             'n7 [label="(7)\n' +
             'return x",shape=box]\n' +
             'n8 [label="(8)\n' +
-            'return c",shape=box,color=green]\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
             'n9 [label="(9)\n' +
-            'b < z /2",shape=diamond,color=green]\n' +
+            'b < z /2",shape=diamond,style=filled,fillcolor=green]\n' +
             'n10 [label="(10)\n' +
-            'c=5",shape=box,color=green]\n' +
+            'c=5",shape=box,style=filled,fillcolor=green]\n' +
             'n11 [label="(11)\n' +
-            'c==5",shape=diamond,color=green]\n' +
+            'c==5",shape=diamond,style=filled,fillcolor=green]\n' +
             'n12 [label="(12)\n' +
             'arr[0]=true\n' +
-            'c=6",shape=box,color=green]\n' +
+            'c=6",shape=box,style=filled,fillcolor=green]\n' +
             'n13 [label="(13)\n' +
             'c = 6",shape=box]\n' +
             'n14 [label="(14)\n' +

@@ -219,9 +219,9 @@ function getNextNode(graphLines,cond_node_name){
 }
 //color a node in the path
 function colorNode(line){
-    if (!line.includes('color=')) { //if node not colored
+    if (!line.includes('fillcolor=')) { //if node not colored
         let endIndex = line.lastIndexOf(']');
-        line = line.substring(0, endIndex) + ',color=green' + line.substring(endIndex);
+        line = line.substring(0, endIndex) + ',style=filled,fillcolor=green' + line.substring(endIndex);
     }
     return line;
 
