@@ -392,12 +392,22 @@ function getLabel(line){
 
 //if let or assignment
 function isLetStatement(line){
-    if (line.substring(0,3)=='let' || (line.includes('=') && !line.includes('==') && !line.includes('>=') && !line.includes('<=') && !line.includes('!=') ) || line.includes('++')|| line.includes('--')) //let or has ONE '='
-        return true;
-    return false;
+    let isLet=false;
+    if (line.substring(0,3)=='let' || line.includes('++')|| line.includes('--')) { //let or has ONE '='
+        isLet=true;
+    }
+    else if (line.includes('=')){
+        isLet = keepCheckingIfLet(line);
+    }
+    return isLet;
 }
 
+function keepCheckingIfLet(line){
+    if (!line.includes('==') && !line.includes('>=') && !line.includes('<=') && !line.includes('!=') )
+        return true;
+    return false;
 
+}
 function getNodeNumber(line){
     let number=line.substring(0,line.indexOf(' '));
     return number;
