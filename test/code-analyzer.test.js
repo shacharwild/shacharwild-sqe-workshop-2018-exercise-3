@@ -1397,4 +1397,80 @@ describe('19', () => {
 
         );
     });
+    it('is making CFG graph with while statement inside else if correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z,d){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    \n' +
+            '    if (b < z) {\n' +
+            '        if (b == 4) {\n' +
+            '            c = 8;\n' +
+            '        }\n' +
+            '        c = c + 5;\n' +
+            '    } else if (b < z * 2) {\n' +
+            '       while (a < z) {\n' +
+            '           c = a + b;\n' +
+            '           z = c * 2;\n' +
+            '           a++;\n' +
+            '       }\n' +
+            '   if (d!=true){\n' +
+            '        c = c + z + 5;\n' +
+            '}\n' +
+            '    } else {\n' +
+            '    \n' +
+            '    }\n' +
+            '    \n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,3,true')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'b < z",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n3 [label="(3)\n' +
+            'b == 4",shape=diamond]\n' +
+            'n4 [label="(4)\n' +
+            'c = 8",shape=box]\n' +
+            'n5 [label="(5)\n' +
+            'c = c + 5",shape=box]\n' +
+            'n6 [label="(6)\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
+            'n7 [label="(7)\n' +
+            'b < z * 2",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n8 [label="(8)\n' +
+            'a < z",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n9 [label="(9)\n' +
+            'c = a + b\n' +
+            'z = c * 2\n' +
+            'a++",shape=box,style=filled,fillcolor=green]\n' +
+            'n10 [label="(10)\n' +
+            'd!=true",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n11 [label="(11)\n' +
+            'c = c + z + 5",shape=box]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n7 [label="false"]\n' +
+            'n3 -> n4 [label="true"]\n' +
+            'n3 -> n5 [label="false"]\n' +
+            'n4 -> n5 []\n' +
+            'n5 -> n6 []\n' +
+            'n7 -> n8 [label="true"]\n' +
+            'n7 -> n6 [label="false"]\n' +
+            'n8 -> n9 [label="true"]\n' +
+            'n8 -> n10 [label="false"]\n' +
+            'n10 -> n11 [label="true"]\n' +
+            'n10 -> n6 [label="false"]\n' +
+            'n11 -> n6 []\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n9 -> n8 []'
+
+        );
+    });
 });

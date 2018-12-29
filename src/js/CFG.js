@@ -487,9 +487,6 @@ function removeStart(n0,graphLines){
             i--; //we removed item so index changed. so we dont miss item
         }
     }
-    if (n0=='exit'){
-
-    }
 
     return graphLines;
 }
