@@ -86,11 +86,26 @@ function helper(i,temp,code){
         unMergable = esprima.parseScript(unMergable + '');
         unMergable = escodegen.generate(unMergable); //convert from JSON to string
         unMergable = unMergable.replace(';', '');
+        unMergable=unMergable.replace(new RegExp('\\n', 'g'), ''); //remove let from previosu node..
+        unMergable = checkIfArray(unMergable);
+
         notToBeMerged.push(unMergable);
     }
 
-
 }
+
+function checkIfArray(unMergable){
+    if (unMergable.includes('[') && unMergable.includes(']') && unMergable.includes(',')){
+        let startIndex =  unMergable.indexOf('[')+1;
+        let endIndex = unMergable.indexOf(']');
+        let insideArray = unMergable.substring(startIndex,endIndex);
+        let newValue =  insideArray.replace(new RegExp(/\s/g, 'g'), '');
+        unMergable = unMergable.replace(insideArray,newValue);
+    }
+    return unMergable;
+}
+
+
 function MakeConditionsResult(colorHelp){
     let finalCode = colorHelp[0];
     let ifElseStatements = colorHelp[1];
