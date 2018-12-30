@@ -1473,4 +1473,112 @@ describe('19', () => {
 
         );
     });
+    it('is making CFG graph only 2 statements correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z,d){\n' +
+            'x=x+1;\n' +
+            'return z+y;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,3,true')
+            ,
+            'n1 [label="(1)\n' +
+            'x=x+1",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'return z+y",shape=box,style=filled,fillcolor=green]\n' +
+            'n1 -> n2 []\n' +
+            ''
+
+        );
+    });
+    it('is making CFG graph with 3 nested if and while statements correctly', () => {
+        let codeToParse=
+            'function foo(x, y, z,arr){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    \n' +
+            '    if (b < z) {\n' +
+            '        c = c + 5;\n' +
+            '    } else if (b < z * 2) {\n' +
+            '        c = c + x + 5;\n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            '    }\n' +
+            '\n' +
+            'if (arr[c+2]!=\'sora\'){\n' +
+            'c=5;\n' +
+            'while(c==5){\n' +
+            'c++;\n' +
+            'let k=true;\n' +
+            '}\n' +
+            '\n' +
+            '}\n' +
+            'else{\n' +
+            'c=7;\n' +
+            'arr[0]=\'layla\';\n' +
+            'if (arr[0]==\'lfayla\')\n' +
+            'return false;\n' +
+            '}\n' +
+            '    \n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,3,[true,true,\'sora\']')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'b < z",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = c + 5",shape=box]\n' +
+            'n4 [label="(4)\n' +
+            'arr[c+2]!=\'sora\'",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n5 [label="(5)\n' +
+            'c=5",shape=box]\n' +
+            'n6 [label="(6)\n' +
+            'c==5",shape=diamond]\n' +
+            'n7 [label="(7)\n' +
+            'c++\n' +
+            ' k=true",shape=box]\n' +
+            'n8 [label="(8)\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
+            'n9 [label="(9)\n' +
+            'c=7\n' +
+            'arr[0]=\'layla\'",shape=box,style=filled,fillcolor=green]\n' +
+            'n10 [label="(10)\n' +
+            'arr[0]==\'lfayla\'",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n11 [label="(11)\n' +
+            'return false",shape=box]\n' +
+            'n12 [label="(12)\n' +
+            'b < z * 2",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n13 [label="(13)\n' +
+            'c = c + x + 5",shape=box,style=filled,fillcolor=green]\n' +
+            'n14 [label="(14)\n' +
+            'c = c + z + 5",shape=box]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n12 [label="false"]\n' +
+            'n3 -> n4 []\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n9 [label="false"]\n' +
+            'n5 -> n6 []\n' +
+            'n6 -> n7 [label="true"]\n' +
+            'n6 -> n8 [label="false"]\n' +
+            'n10 -> n11 [label="true"]\n' +
+            'n10 -> n8 [label="false"]\n' +
+            'n12 -> n13 [label="true"]\n' +
+            'n12 -> n14 [label="false"]\n' +
+            'n13 -> n4 []\n' +
+            'n14 -> n4 []\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n7 -> n6 []\n' +
+            'n9 -> n10 []'
+
+        );
+    });
 });

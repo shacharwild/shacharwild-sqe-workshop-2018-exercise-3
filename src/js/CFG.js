@@ -194,10 +194,10 @@ function recursiveColorNormal(graphLines,coloredNode){
 }
 function isCond(line){
     let ans=false;
-    if (line.includes('shape=')){
-        if (line.includes('=diamond'))
-            ans=true;
-    }
+    // if (line.includes('shape=')){
+    if (line.includes('=diamond'))
+        ans=true;
+    //  }
     return ans;
 }
 
