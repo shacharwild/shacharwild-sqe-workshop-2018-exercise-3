@@ -324,6 +324,10 @@ function updateNormalNode(graphLines,i,oldName,label){
     let toReturn=[];
     if (i<graphLines.length-1){
         toReturn = checkIfToMerge(graphLines,i,oldName,label);
+        let index = toReturn[1];
+        graphLines[index]=graphLines[index].replace(new RegExp('let', 'g'), ''); //remove let
+        graphLines[index]=graphLines[index].replace(new RegExp(';', 'g'), ''); //remove let from previosu node..
+        toReturn[0]=graphLines;
     }
 
     return toReturn;
