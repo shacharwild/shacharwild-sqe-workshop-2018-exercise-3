@@ -1816,4 +1816,122 @@ describe('19', () => {
 
         );
     });
+
+
+
+    it('is making CFG graph that ends with normal statement and return  correctly', () => {
+        let codeToParse=
+            'function func(minIndex,maxIndex){\n' +
+            'let list = [1,2,3];\n' +
+            'let currentElement = 0;\n' +
+            'let element = 3;\n' +
+            'let currentIndex = 0;\n' +
+            'while (minIndex<=maxIndex){\n' +
+            '  minIndex++;\n' +
+            '  currentIndex = minIndex;\n' +
+            '  currentElement = list[currentIndex];\n' +
+            '  if (currentElement==element){\n' +
+            '    return currentIndex;\n' +
+            '  }\n' +
+            '  if (currentElement<element){\n' +
+            '    minIndex = currentIndex + 1;\n' +
+            '  }\n' +
+            'if (currentElement > element){\n' +
+            '    maxIndex = currentIndex - 1;\n' +
+            '}\n' +
+            '\n' +
+            '\n' +
+            '}\n' +
+            'return true;\n' +
+            '\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'2,2')
+            ,
+            'n1 [label="(1)\n' +
+            ' list = [1,2,3]\n' +
+            ' currentElement = 0\n' +
+            ' element = 3\n' +
+            ' currentIndex = 0",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'minIndex<=maxIndex",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n3 [label="(3)\n' +
+            'minIndex++\n' +
+            'currentIndex = minIndex\n' +
+            'currentElement = list[currentIndex]",shape=box,style=filled,fillcolor=green]\n' +
+            'n4 [label="(4)\n' +
+            'currentElement==element",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n5 [label="(5)\n' +
+            'return currentIndex",shape=box]\n' +
+            'n6 [label="(6)\n' +
+            'currentElement<element",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n7 [label="(7)\n' +
+            'minIndex = currentIndex + 1",shape=box]\n' +
+            'n8 [label="(8)\n' +
+            'currentElement > element",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n9 [label="(9)\n' +
+            'maxIndex = currentIndex - 1",shape=box]\n' +
+            'n10 [label="(10)\n' +
+            'return true",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n10 [label="false"]\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n6 [label="false"]\n' +
+            'n6 -> n7 [label="true"]\n' +
+            'n6 -> n8 [label="false"]\n' +
+            'n7 -> n8 []\n' +
+            'n8 -> n9 [label="true"]\n' +
+            'n8 -> n2 [label="false"]\n' +
+            'n9 -> n2 []\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n3 -> n4 []'
+
+        );
+    });
+
+    it('is making CFG graph that ends with nested if and while statements correctly', () => {
+        let codeToParse=
+            'function func(x){\n' +
+            'if (x>5){\n' +
+            'x++;\n' +
+            'while (x>7){\n' +
+            'x = x + 1;\n' +
+            '}\n' +
+            '}\n' +
+            '\n' +
+            'else{\n' +
+            'x--;\n' +
+            '}\n' +
+            'return true;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'6')
+            ,
+            'n1 [label="(1)\n' +
+            'x>5",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'x++",shape=box,style=filled,fillcolor=green]\n' +
+            'n3 [label="(3)\n' +
+            'x>7",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n4 [label="(4)\n' +
+            'x = x + 1",shape=box]\n' +
+            'n5 [label="(5)\n' +
+            'return true",shape=box,style=filled,fillcolor=green]\n' +
+            'n6 [label="(6)\n' +
+            'x--",shape=box]\n' +
+            'n1 -> n2 [label="true"]\n' +
+            'n1 -> n6 [label="false"]\n' +
+            'n2 -> n3 []\n' +
+            'n3 -> n4 [label="true"]\n' +
+            'n3 -> n5 [label="false"]\n' +
+            'n4 -> n3 []\n' +
+            'n6 -> n5 []\n' +
+            ''
+
+        );
+    });
+
 });
