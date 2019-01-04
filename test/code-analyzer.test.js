@@ -1933,5 +1933,53 @@ describe('19', () => {
 
         );
     });
+    it('delete it ', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    \n' +
+            '    if (b < z) {\n' +
+            '        c = c + 5;\n' +
+            '    } else if (b < z * 2) {\n' +
+            '        c = c + x + 5;\n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            '    }\n' +
+            '    \n' +
+            '    return c;\n' +
+            '}';
 
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,3')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'b < z",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = c + 5",shape=box]\n' +
+            'n4 [label="(4)\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
+            'n5 [label="(5)\n' +
+            'b < z * 2",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n6 [label="(6)\n' +
+            'c = c + x + 5",shape=box,style=filled,fillcolor=green]\n' +
+            'n7 [label="(7)\n' +
+            'c = c + z + 5",shape=box]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n5 [label="false"]\n' +
+            'n3 -> n4 []\n' +
+            'n5 -> n6 [label="true"]\n' +
+            'n5 -> n7 [label="false"]\n' +
+            'n6 -> n4 []\n' +
+            'n7 -> n4 []\n' +
+            '\n' +
+            'n1 -> n2 []'
+
+        );
+    });
 });
