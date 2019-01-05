@@ -966,13 +966,15 @@ describe('19', () => {
             'n2 -> n7 [label="false"]\n' +
             'n3 -> n4 []\n' +
             'n4 -> n5 [label="true"]\n' +
-            'n4 -> n6 [label="false"]\n' +
+            'n4 -> n100 [label="false"]\n' +
             'n7 -> n8 [label="true"]\n' +
             'n7 -> n9 [label="false"]\n' +
-            'n8 -> n6 []\n' +
-            'n9 -> n6 []\n' +
+            'n8 -> n100 []\n' +
+            'n9 -> n100 []\n' +
             '\n' +
-            'n1 -> n2 []'
+            'n1 -> n2 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n6 []'
 
         );
     });
@@ -1026,16 +1028,18 @@ describe('19', () => {
             'c ++",shape=box,style=filled,fillcolor=green]\n' +
             'n2 -> n3 [label="true"]\n' +
             'n2 -> n5 [label="false"]\n' +
-            'n3 -> n4 []\n' +
+            'n3 -> n100 []\n' +
             'n5 -> n6 [label="true"]\n' +
             'n5 -> n7 [label="false"]\n' +
-            'n6 -> n4 []\n' +
+            'n6 -> n100 []\n' +
             'n7 -> n8 []\n' +
             'n8 -> n9 [label="true"]\n' +
-            'n8 -> n4 [label="false"]\n' +
+            'n8 -> n100 [label="false"]\n' +
             'n9 -> n8 []\n' +
             '\n' +
-            'n1 -> n2 []'
+            'n1 -> n2 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n4 []'
 
         );
     });
@@ -1100,17 +1104,21 @@ describe('19', () => {
             'n2 -> n9 [label="false"]\n' +
             'n3 -> n4 []\n' +
             'n4 -> n5 [label="true"]\n' +
-            'n4 -> n6 [label="false"]\n' +
+            'n4 -> n100 [label="false"]\n' +
             'n5 -> n4 []\n' +
             'n6 -> n7 [label="true"]\n' +
-            'n6 -> n8 [label="false"]\n' +
-            'n7 -> n8 []\n' +
+            'n6 -> n101 [label="false"]\n' +
+            'n7 -> n101 []\n' +
             'n9 -> n10 [label="true"]\n' +
             'n9 -> n11 [label="false"]\n' +
-            'n10 -> n6 []\n' +
+            'n10 -> n100 []\n' +
             '\n' +
             'n1 -> n2 []\n' +
-            'n11 -> n6 []'
+            'n11 -> n100 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n6 []\n' +
+            'n101 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n101 -> n8 []'
 
         );
     });
@@ -1224,18 +1232,20 @@ describe('19', () => {
             'n2 -> n7 [label="false"]\n' +
             'n3 -> n4 []\n' +
             'n4 -> n5 [label="true"]\n' +
-            'n4 -> n6 [label="false"]\n' +
+            'n4 -> n100 [label="false"]\n' +
             'n5 -> n4 []\n' +
             'n7 -> n8 [label="true"]\n' +
             'n7 -> n12 [label="false"]\n' +
             'n8 -> n9 []\n' +
             'n9 -> n10 [label="true"]\n' +
             'n9 -> n11 [label="false"]\n' +
-            'n11 -> n6 []\n' +
-            'n12 -> n6 []\n' +
+            'n11 -> n100 []\n' +
+            'n12 -> n100 []\n' +
             '\n' +
             'n1 -> n2 []\n' +
-            'n10 -> n6 []'
+            'n10 -> n100 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n6 []'
 
         );
     });
@@ -1313,7 +1323,7 @@ describe('19', () => {
             'n2 -> n9 [label="false"]\n' +
             'n3 -> n4 []\n' +
             'n4 -> n5 [label="true"]\n' +
-            'n4 -> n6 [label="false"]\n' +
+            'n4 -> n100 [label="false"]\n' +
             'n5 -> n4 []\n' +
             'n6 -> n7 [label="true"]\n' +
             'n6 -> n8 [label="false"]\n' +
@@ -1322,11 +1332,13 @@ describe('19', () => {
             'n10 -> n11 []\n' +
             'n11 -> n12 [label="true"]\n' +
             'n11 -> n13 [label="false"]\n' +
-            'n13 -> n6 []\n' +
-            'n14 -> n6 []\n' +
+            'n13 -> n100 []\n' +
+            'n14 -> n100 []\n' +
             '\n' +
             'n1 -> n2 []\n' +
-            'n12 -> n6 []'
+            'n12 -> n100 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n6 []'
 
         );
     });
@@ -1386,14 +1398,16 @@ describe('19', () => {
             'n3 -> n2 []\n' +
             'n4 -> n5 [label="true"]\n' +
             'n4 -> n8 [label="false"]\n' +
-            'n5 -> n6 []\n' +
+            'n5 -> n100 []\n' +
             'n6 -> n7 []\n' +
             'n8 -> n9 [label="true"]\n' +
             'n8 -> n10 [label="false"]\n' +
-            'n9 -> n6 []\n' +
-            'n10 -> n6 []\n' +
+            'n9 -> n100 []\n' +
+            'n10 -> n100 []\n' +
             '\n' +
-            'n1 -> n2 []'
+            'n1 -> n2 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n6 []'
 
         );
     });
@@ -1457,19 +1471,23 @@ describe('19', () => {
             'n2 -> n3 [label="true"]\n' +
             'n2 -> n7 [label="false"]\n' +
             'n3 -> n4 [label="true"]\n' +
-            'n3 -> n5 [label="false"]\n' +
-            'n4 -> n5 []\n' +
-            'n5 -> n6 []\n' +
+            'n3 -> n100 [label="false"]\n' +
+            'n4 -> n100 []\n' +
+            'n5 -> n101 []\n' +
             'n7 -> n8 [label="true"]\n' +
-            'n7 -> n6 [label="false"]\n' +
+            'n7 -> n101 [label="false"]\n' +
             'n8 -> n9 [label="true"]\n' +
             'n8 -> n10 [label="false"]\n' +
             'n10 -> n11 [label="true"]\n' +
-            'n10 -> n6 [label="false"]\n' +
-            'n11 -> n6 []\n' +
+            'n10 -> n101 [label="false"]\n' +
+            'n11 -> n101 []\n' +
             '\n' +
             'n1 -> n2 []\n' +
-            'n9 -> n8 []'
+            'n9 -> n8 []\n' +
+            'n100 [label=" ", shape=circle]\n' +
+            'n100 -> n5 []\n' +
+            'n101 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n101 -> n6 []'
 
         );
     });
@@ -1562,22 +1580,26 @@ describe('19', () => {
             'c = c + z + 5",shape=box]\n' +
             'n2 -> n3 [label="true"]\n' +
             'n2 -> n12 [label="false"]\n' +
-            'n3 -> n4 []\n' +
+            'n3 -> n100 []\n' +
             'n4 -> n5 [label="true"]\n' +
             'n4 -> n9 [label="false"]\n' +
             'n5 -> n6 []\n' +
             'n6 -> n7 [label="true"]\n' +
-            'n6 -> n8 [label="false"]\n' +
+            'n6 -> n101 [label="false"]\n' +
             'n10 -> n11 [label="true"]\n' +
-            'n10 -> n8 [label="false"]\n' +
+            'n10 -> n101 [label="false"]\n' +
             'n12 -> n13 [label="true"]\n' +
             'n12 -> n14 [label="false"]\n' +
-            'n13 -> n4 []\n' +
-            'n14 -> n4 []\n' +
+            'n13 -> n100 []\n' +
+            'n14 -> n100 []\n' +
             '\n' +
             'n1 -> n2 []\n' +
             'n7 -> n6 []\n' +
-            'n9 -> n10 []'
+            'n9 -> n10 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n4 []\n' +
+            'n101 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n101 -> n8 []'
 
         );
     });
@@ -1660,18 +1682,20 @@ describe('19', () => {
             'n5 -> n2 []\n' +
             'n6 -> n7 [label="true"]\n' +
             'n6 -> n8 [label="false"]\n' +
-            'n7 -> n5 []\n' +
+            'n7 -> n100 []\n' +
             'n8 -> n9 []\n' +
             'n9 -> n10 [label="true"]\n' +
             'n9 -> n11 [label="false"]\n' +
-            'n10 -> n5 []\n' +
+            'n10 -> n100 []\n' +
             'n11 -> n12 [label="true"]\n' +
             'n11 -> n13 [label="false"]\n' +
-            'n12 -> n5 []\n' +
-            'n13 -> n5 []\n' +
+            'n12 -> n100 []\n' +
+            'n13 -> n100 []\n' +
             '\n' +
             'n1 -> n2 []\n' +
-            'n4 -> n5 []'
+            'n4 -> n100 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n5 []'
 
         );
     });
@@ -1797,22 +1821,24 @@ describe('19', () => {
             'n2 -> n14 [label="false"]\n' +
             'n3 -> n4 [label="true"]\n' +
             'n3 -> n6 [label="false"]\n' +
-            'n4 -> n5 []\n' +
+            'n4 -> n100 []\n' +
             'n5 -> n2 []\n' +
             'n6 -> n7 [label="true"]\n' +
             'n6 -> n8 [label="false"]\n' +
-            'n7 -> n5 []\n' +
+            'n7 -> n100 []\n' +
             'n8 -> n9 []\n' +
             'n9 -> n10 [label="true"]\n' +
             'n9 -> n11 [label="false"]\n' +
-            'n10 -> n5 []\n' +
+            'n10 -> n100 []\n' +
             'n11 -> n12 [label="true"]\n' +
             'n11 -> n13 [label="false"]\n' +
-            'n12 -> n5 []\n' +
-            'n13 -> n5 []\n' +
+            'n12 -> n100 []\n' +
+            'n13 -> n100 []\n' +
             'n14 -> n15 []\n' +
             '\n' +
-            'n1 -> n2 []'
+            'n1 -> n2 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n5 []'
 
         );
     });
@@ -1879,14 +1905,16 @@ describe('19', () => {
             'n4 -> n5 [label="true"]\n' +
             'n4 -> n6 [label="false"]\n' +
             'n6 -> n7 [label="true"]\n' +
-            'n6 -> n8 [label="false"]\n' +
-            'n7 -> n8 []\n' +
+            'n6 -> n100 [label="false"]\n' +
+            'n7 -> n100 []\n' +
             'n8 -> n9 [label="true"]\n' +
             'n8 -> n2 [label="false"]\n' +
             'n9 -> n2 []\n' +
             '\n' +
             'n1 -> n2 []\n' +
-            'n3 -> n4 []'
+            'n3 -> n4 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n8 []'
 
         );
     });
@@ -1926,14 +1954,16 @@ describe('19', () => {
             'n1 -> n6 [label="false"]\n' +
             'n2 -> n3 []\n' +
             'n3 -> n4 [label="true"]\n' +
-            'n3 -> n5 [label="false"]\n' +
+            'n3 -> n100 [label="false"]\n' +
             'n4 -> n3 []\n' +
-            'n6 -> n5 []\n' +
-            ''
+            'n6 -> n100 []\n' +
+            '\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n5 []'
 
         );
     });
-    it('delete it ', () => {
+    it('is making CFG graph with lecturer example correctly ', () => {
         let codeToParse=
             'function foo(x, y, z){\n' +
             '    let a = x + 1;\n' +
@@ -1972,13 +2002,15 @@ describe('19', () => {
             'c = c + z + 5",shape=box]\n' +
             'n2 -> n3 [label="true"]\n' +
             'n2 -> n5 [label="false"]\n' +
-            'n3 -> n4 []\n' +
+            'n3 -> n100 []\n' +
             'n5 -> n6 [label="true"]\n' +
             'n5 -> n7 [label="false"]\n' +
-            'n6 -> n4 []\n' +
-            'n7 -> n4 []\n' +
+            'n6 -> n100 []\n' +
+            'n7 -> n100 []\n' +
             '\n' +
-            'n1 -> n2 []'
+            'n1 -> n2 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n4 []'
 
         );
     });

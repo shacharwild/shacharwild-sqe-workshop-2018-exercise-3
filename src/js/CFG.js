@@ -12,6 +12,7 @@ let hadCondition=false;
 let notToBeMerged=[]; //statements that appear STRAIGHT after ELSE -> they are not mergable
 let conditionsType=new Map();
 let finalGraph='';
+let circleNode = 100;
 
 
 function init(){
@@ -23,6 +24,7 @@ function init(){
     notToBeMerged=[];
     conditionsType=new Map(); //<condition, type(while,if..)>
     finalGraph='';
+    circleNode = 100;
 }
 
 function createCFG(codeToParse,table,input) {
@@ -35,6 +37,7 @@ function createCFG(codeToParse,table,input) {
     graphLines = updateGraph(graphLines);
     let colorHelp = symbolicSubstitutionn(codeToParse, input, table);// color graph
     MakeConditionsResult(colorHelp);
+    graphLines = addMergeNodes(graphLines);
     graphLines=colorGraph(graphLines);
     graphLines = indexNodes(graphLines);//add index to each node
     graphLines = removeExit(graphLines); //remove exit node
@@ -42,8 +45,7 @@ function createCFG(codeToParse,table,input) {
     for (let i=1; i<graphLines.length; i++){
         finalGraph=finalGraph+graphLines[i]+'';
         if (i<graphLines.length-1)
-            finalGraph=finalGraph+'\n';
-    }
+            finalGraph=finalGraph+'\n';  }
     return finalGraph;   }
 
 
@@ -383,7 +385,7 @@ function indexNodes(graphLines){
 
 function addNumber(line){
     let labelIndex=line.indexOf('label=');
-    if (labelIndex>-1 && !line.includes('->')){ //if exists label
+    if (labelIndex>-1 && !line.includes('->') && !line.includes('label=" "')){ //if exists label
         let node_name = getNodeNumber(line);
         let node_number = node_name.substring(node_name.indexOf('n')+1);
         let lable = getLabel(line);
@@ -520,5 +522,56 @@ function removeExit(graphLines){
             continue;
         }
     }
+    return graphLines;
+}
+
+
+function addMergeNodes(graphLines){
+    for (let i=1; i<graphLines.length; i++) {
+        let line = graphLines[i];
+        if (line.includes('->') || line.includes('shape=circle'))
+            continue;
+        let target_node = getNodeNumber(line);
+        let pointers = checkIfMakeCircle(target_node,graphLines);
+        var num_pointers = pointers.length;
+        let isCircle = checkIfMergeIt(getLabel(line),num_pointers);
+        if (isCircle==true) //not a while
+            graphLines = makeCircle(target_node,pointers,graphLines);
+    }
+    return graphLines;
+
+}
+function checkIfMergeIt(label,num_pointers){
+    let makeCircle = true;
+    if (conditionsType.has(label) && conditionsType.get(label)=='while statement')
+        makeCircle =  false;
+    if (makeCircle==true && num_pointers>1)
+        return true;
+    return false;
+}
+function checkIfMakeCircle(target_node,graphLines) {
+    let pointers = [];
+    for (let i = 0; i < graphLines.length; i++) {
+        let line = graphLines[i];
+        var index = line.indexOf('-> ' + target_node + ' [');
+        if (index > -1) { //if found the connection name
+            pointers.push(i);
+        }
+    }
+    return pointers;
+}
+function makeCircle(target_node,pointers,graphLines){
+    let circleName = 'n'+circleNode;
+    let newCircleNode = circleName+' [label=" ", shape=circle]';
+    graphLines.push(newCircleNode); //add merge node to graph
+    //change pointers
+    for (let i=0; i<pointers.length; i++) {
+        let index = pointers[i];
+        graphLines[index] = graphLines[index].replace(target_node,circleName);
+    }
+    // circle now points to target
+    let newPoint = circleName+' -> '+target_node+' []';
+    graphLines.push(newPoint);
+    circleNode++;
     return graphLines;
 }
