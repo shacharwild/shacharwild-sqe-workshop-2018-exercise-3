@@ -255,8 +255,8 @@ function replaceArrayValue(left,newValue, dic, arrName){
         right = left.substring(0,left.indexOf(']')+1); //the []  will be removed in 3 rows
         index= left.substring(left.lastIndexOf('[')+1,left.lastIndexOf(']'));}
     right=right.substring(1, right.length-1); //remove [ and ]
-    var arr=right.split(',');
-    index=eval(replaceIndex(index));
+    var arr=right.split(','); index = updateIndex(index,globals);
+    index=eval(index);
     arr[index]=newValue;
     right='[';
     for (let i=0; i<arr.length ;i++){
@@ -266,6 +266,20 @@ function replaceArrayValue(left,newValue, dic, arrName){
     right+=']';
     dic.set(arrName, right); }
 
+function updateIndex(value, locals){
+    vars=[];
+    value=escodegen.generate(esprima.parseScript(value+'').body[0].expression);
+    value=value.replace(/\s/g, '');
+    valueVars[esprima.parseScript(value+'').body[0].expression.type](esprima.parseScript(value+'').body[0].expression);
+    for (let i=0; i<vars.length;i++){
+        let check=vars[i]+'';
+        value = updateAssNewValue(check,locals,value);   }//update value line
+
+    value=value.replace(/\s/g, '');
+    return value;
+}
+
+/*
 function replaceIndex(index){
     // if (locals.has(index))
     //     index=locals.get(index);
@@ -273,6 +287,7 @@ function replaceIndex(index){
         index=globals.get(index);
     return index;
 }
+*/
 
 //6
 function handleIf(statement, locals){

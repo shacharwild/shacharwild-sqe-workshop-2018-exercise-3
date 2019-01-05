@@ -2014,4 +2014,83 @@ describe('19', () => {
 
         );
     });
+
+    it('is making CFG graph with very complicated nested conditions correctly ', () => {
+        let codeToParse=
+            'function foo(x, y, z,arr){\n' +
+            '    let a = x + 1;\n' +
+            '    let b = a + y;\n' +
+            '    let c = 0;\n' +
+            '    if (b < z) {\n' +
+            '        c = c + 5;\n' +
+            '       \n' +
+            '    } else if (b < z * 2) {\n' +
+            '        c = c + x + 5;\n' +
+            '      arr[b-2]=\'sora\';\n' +
+            '    } else {\n' +
+            '        c = c + z + 5;\n' +
+            '    }\n' +
+            '    \n' +
+            '\n' +
+            'if (arr[c+2]==\'sora\'){\n' +
+            'c=5;\n' +
+            'while(c==5){\n' +
+            '\n' +
+            'c=c+1;\n' +
+            '}\n' +
+            '}\n' +
+            '    \n' +
+            '    return c;\n' +
+            '}';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'1,2,3,[1,2,3]')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = x + 1\n' +
+            ' b = a + y\n' +
+            ' c = 0",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'b < z",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = c + 5",shape=box]\n' +
+            'n4 [label="(4)\n' +
+            'arr[c+2]==\'sora\'",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n5 [label="(5)\n' +
+            'c=5",shape=box,style=filled,fillcolor=green]\n' +
+            'n6 [label="(6)\n' +
+            'c==5",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n7 [label="(7)\n' +
+            'c=c+1",shape=box,style=filled,fillcolor=green]\n' +
+            'n8 [label="(8)\n' +
+            'return c",shape=box,style=filled,fillcolor=green]\n' +
+            'n9 [label="(9)\n' +
+            'b < z * 2",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n10 [label="(10)\n' +
+            'c = c + x + 5\n' +
+            'arr[b-2]=\'sora\'",shape=box,style=filled,fillcolor=green]\n' +
+            'n11 [label="(11)\n' +
+            'c = c + z + 5",shape=box]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n9 [label="false"]\n' +
+            'n3 -> n100 []\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n101 [label="false"]\n' +
+            'n5 -> n6 []\n' +
+            'n6 -> n7 [label="true"]\n' +
+            'n6 -> n101 [label="false"]\n' +
+            'n7 -> n6 []\n' +
+            'n9 -> n10 [label="true"]\n' +
+            'n9 -> n11 [label="false"]\n' +
+            'n11 -> n100 []\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n10 -> n100 []\n' +
+            'n100 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n100 -> n4 []\n' +
+            'n101 [label=" ", shape=circle,style=filled,fillcolor=green]\n' +
+            'n101 -> n8 []'
+
+        );
+    });
 });
