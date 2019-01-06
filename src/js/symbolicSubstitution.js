@@ -266,6 +266,7 @@ function replaceArrayValue(left,newValue, dic, arrName){
     right+=']';
     dic.set(arrName, right); }
 
+// the locals here is GLOBALS.
 function updateIndex(value, locals){
     vars=[];
     value=escodegen.generate(esprima.parseScript(value+'').body[0].expression);
