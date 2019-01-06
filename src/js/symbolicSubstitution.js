@@ -430,10 +430,17 @@ function continueCheckLeft(left,locals,addLeft){
 
 function checkIfString(value){
     if (/^[a-zA-Z]+$/.test(value) && !globals.has(value) && value!='true' && value!='false')
-        return '"'+value+'"';
+        return addmerhaot(value);
     return value;
 
 }
+
+function addmerhaot(value){
+    if (value!='length')
+        return '"'+value+'"';
+    return value;
+}
+
 function handleRight(right,locals){
     var addRight='';
 
@@ -973,12 +980,20 @@ function memberExpressionCondition(parssedCond,k,v){
 
     parssedCond=checkObject(parssedCond,k,v); //check object
 
+    /*
     if (parssedCond.property.name!=null) {  //check property
         if (parssedCond.property.name==k)
-            parssedCond.property.name=v;
+            parssedCond.property.namnpme=v;
 
     }
+    */
+    parssedCond.property=checkValueType(parssedCond.property,k,v);
+
     return parssedCond;
+
+    //parssedCond.property=checkValueType(parssedCond.property,k,v);
+    //return parssedCond;
+
 }
 
 function checkObject(parssedCond,k,v){

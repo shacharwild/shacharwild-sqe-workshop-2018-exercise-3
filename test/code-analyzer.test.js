@@ -2093,4 +2093,55 @@ describe('19', () => {
 
         );
     });
+
+    it('is making CFG graph with array assignment correctly ', () => {
+        let codeToParse=
+            'function foo(x, y, z){\n' +
+            '            let a = y - 1;\n' +
+            '            let b = a + y+x.length;\n' +
+            '            let c = 0;\n' +
+            '            let arr=[1,2,3];\n' +
+            '            x[a]=\'layla\';\n' +
+            '            while (x[a] == \'layla\'){\n' +
+            '            c = a + b;\n' +
+            '            z = c * 2;\n' +
+            '            if (z==14)\n' +
+            '            return true;\n' +
+            '            \n' +
+            '            }\n' +
+            '            \n' +
+            '            return z;\n' +
+            '            }';
+
+        let table =parseCode(codeToParse); //make table
+        assert.equal(createCFG(codeToParse,table,'[1,2,3],2,3')
+            ,
+            'n1 [label="(1)\n' +
+            ' a = y - 1\n' +
+            ' b = a + y+x.length\n' +
+            ' c = 0\n' +
+            ' arr=[1,2,3]\n' +
+            'x[a]=\'layla\'",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 [label="(2)\n' +
+            'x[a] == \'layla\'",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n3 [label="(3)\n' +
+            'c = a + b\n' +
+            'z = c * 2",shape=box,style=filled,fillcolor=green]\n' +
+            'n4 [label="(4)\n' +
+            'z==14",shape=diamond,style=filled,fillcolor=green]\n' +
+            'n5 [label="(5)\n' +
+            'return true",shape=box,style=filled,fillcolor=green]\n' +
+            'n6 [label="(6)\n' +
+            'return z",shape=box,style=filled,fillcolor=green]\n' +
+            'n2 -> n3 [label="true"]\n' +
+            'n2 -> n6 [label="false"]\n' +
+            'n4 -> n5 [label="true"]\n' +
+            'n4 -> n2 [label="false"]\n' +
+            '\n' +
+            'n1 -> n2 []\n' +
+            'n3 -> n4 []'
+
+        );
+    });
+
 });
